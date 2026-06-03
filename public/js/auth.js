@@ -8,6 +8,17 @@ document.addEventListener('DOMContentLoaded', () => {
       const email = document.getElementById('login-email').value;
       const password = document.getElementById('login-password').value;
 
+      if (!email.trim() || !password) {
+        showToast('Vui lòng nhập đầy đủ Email và Mật khẩu!', 'warning');
+        return;
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email.trim())) {
+        showToast('Địa chỉ Email không đúng định dạng!', 'warning');
+        return;
+      }
+
       try {
         const data = await fetchAPI('/api/auth/login', {
           method: 'POST',
@@ -45,6 +56,28 @@ document.addEventListener('DOMContentLoaded', () => {
       const confirmPassword = document.getElementById('register-confirm-password').value;
       const address = document.getElementById('register-address').value;
 
+      if (!name.trim()) {
+        showToast('Họ và tên không được bỏ trống!', 'warning');
+        return;
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email.trim())) {
+        showToast('Địa chỉ Email không đúng định dạng (ví dụ: name@domain.com)!', 'warning');
+        return;
+      }
+
+      const phoneRegex = /^(0|84|\+84)(3|5|7|8|9)[0-9]{8}$/;
+      if (!phoneRegex.test(phone.trim())) {
+        showToast('Số điện thoại không đúng định dạng Việt Nam (ví dụ: 0988888888)!', 'warning');
+        return;
+      }
+
+      if (password.length < 6) {
+        showToast('Mật khẩu phải chứa ít nhất 6 ký tự!', 'warning');
+        return;
+      }
+
       if (password !== confirmPassword) {
         showToast('Mật khẩu nhập lại không khớp!', 'warning');
         return;
@@ -80,8 +113,27 @@ document.addEventListener('DOMContentLoaded', () => {
       const otp = document.getElementById('reset-otp')?.value;
       const newPassword = document.getElementById('reset-new-password')?.value;
 
+      if (!email.trim()) {
+        showToast('Vui lòng nhập Email!', 'warning');
+        return;
+      }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email.trim())) {
+        showToast('Địa chỉ Email không đúng định dạng!', 'warning');
+        return;
+      }
+
       // If resetArea is visible, perform final password reset
       if (resetArea && resetArea.style.display === 'block') {
+        if (!otp) {
+          showToast('Vui lòng nhập mã OTP!', 'warning');
+          return;
+        }
+        if (!newPassword || newPassword.length < 6) {
+          showToast('Mật khẩu mới phải từ 6 ký tự trở lên!', 'warning');
+          return;
+        }
+
         try {
           const data = await fetchAPI('/api/auth/reset-password', {
             method: 'POST',

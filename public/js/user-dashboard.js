@@ -125,6 +125,17 @@ document.addEventListener('DOMContentLoaded', async () => {
       const address = document.getElementById('profile-address').value.trim();
       const fileInput = document.getElementById('profile-avatar-file');
 
+      if (!name) {
+        showToast('Họ tên không được bỏ trống!', 'warning');
+        return;
+      }
+
+      const phoneRegex = /^(0|84|\+84)(3|5|7|8|9)[0-9]{8}$/;
+      if (phone && !phoneRegex.test(phone)) {
+        showToast('Số điện thoại không đúng định dạng Việt Nam (ví dụ: 0988888888)!', 'warning');
+        return;
+      }
+
       const formData = new FormData();
       formData.append('name', name);
       formData.append('phone', phone);
@@ -156,6 +167,16 @@ document.addEventListener('DOMContentLoaded', async () => {
       const currentPassword = document.getElementById('profile-curr-password').value;
       const newPassword = document.getElementById('profile-new-password').value;
       const confirmPwd = document.getElementById('profile-confirm-password').value;
+
+      if (!currentPassword) {
+        showToast('Vui lòng nhập mật khẩu hiện tại!', 'warning');
+        return;
+      }
+
+      if (!newPassword || newPassword.length < 6) {
+        showToast('Mật khẩu mới phải chứa ít nhất 6 ký tự!', 'warning');
+        return;
+      }
 
       if (newPassword !== confirmPwd) {
         showToast('Mật khẩu mới nhập lại không khớp!', 'warning');

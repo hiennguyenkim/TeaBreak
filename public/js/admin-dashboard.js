@@ -595,6 +595,35 @@ document.addEventListener('DOMContentLoaded', async () => {
       const address = document.getElementById('acc-address').value.trim();
       const fileInput = document.getElementById('acc-avatar-file');
 
+      if (!name) {
+        showToast('Họ tên không được bỏ trống!', 'warning');
+        return;
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        showToast('Địa chỉ Email không đúng định dạng (ví dụ: name@domain.com)!', 'warning');
+        return;
+      }
+
+      const phoneRegex = /^(0|84|\+84)(3|5|7|8|9)[0-9]{8}$/;
+      if (!phoneRegex.test(phone)) {
+        showToast('Số điện thoại không đúng định dạng Việt Nam (ví dụ: 0988888888)!', 'warning');
+        return;
+      }
+
+      if (!activeAccountId) {
+        if (!password || password.length < 6) {
+          showToast('Mật khẩu khởi tạo phải chứa ít nhất 6 ký tự!', 'warning');
+          return;
+        }
+      } else {
+        if (password && password.length < 6) {
+          showToast('Mật khẩu mới phải chứa ít nhất 6 ký tự!', 'warning');
+          return;
+        }
+      }
+
       const formData = new FormData();
       formData.append('name', name);
       formData.append('email', email);

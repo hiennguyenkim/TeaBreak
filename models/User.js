@@ -29,6 +29,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Vui lòng cung cấp số điện thoại'],
       trim: true,
+      match: [
+        /^(0|84|\+84)(3|5|7|8|9)[0-9]{8}$/,
+        'Số điện thoại không đúng định dạng Việt Nam (gồm 10 chữ số)',
+      ],
     },
     address: {
       type: String,
