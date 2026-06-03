@@ -1,0 +1,214 @@
+/* Staff Dashboard Grid & Metrics */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  background-color: var(--light);
+  border: 1px solid var(--primary-light);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stat-card h3 {
+  font-size: 14px;
+  text-transform: uppercase;
+  color: var(--gray-600);
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 800;
+  font-family: var(--font-title);
+  color: var(--primary-hover);
+}
+
+/* Data Table Styles */
+.data-table-wrapper {
+  overflow-x: auto;
+  margin-bottom: 24px;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th, .data-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--gray-200);
+  font-size: 14px;
+}
+
+.data-table th {
+  background-color: var(--primary-light);
+  font-weight: 700;
+  color: var(--dark);
+}
+
+.data-table tbody tr:hover {
+  background-color: var(--secondary);
+}
+
+/* Action Area */
+.actions-row {
+  display: flex;
+  gap: 8px;
+}
+
+.table-btn {
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.table-btn.primary { background-color: var(--primary-light); color: var(--primary-hover); }
+.table-btn.success { background-color: #d1fae5; color: #059669; }
+.table-btn.danger { background-color: #fee2e2; color: #dc2626; }
+
+.table-btn:hover {
+  filter: brightness(0.95);
+}
+
+/* Chat/Message Box inside Dashboard */
+.chat-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 24px;
+  height: 480px;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background-color: var(--light);
+}
+
+.chat-users-list {
+  border-right: 1px solid var(--gray-200);
+  height: 100%;
+  max-height: 100%;
+  overflow-y: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.chat-user-item {
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.chat-user-item:hover, .chat-user-item.active {
+  background-color: var(--primary-light);
+}
+
+.chat-user-name {
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.chat-user-last {
+  font-size: 11px;
+  color: var(--gray-600);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chat-window {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+}
+
+.chat-header {
+  padding: 16px;
+  border-bottom: 1px solid var(--gray-200);
+  font-weight: 700;
+  background-color: var(--gray-100);
+}
+
+.chat-messages {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chat-msg {
+  max-width: 70%;
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+}
+
+.chat-msg.sent {
+  align-self: flex-end;
+  background-color: var(--primary-light);
+  color: var(--primary-hover);
+  border-bottom-right-radius: 2px;
+}
+
+.chat-msg.received {
+  align-self: flex-start;
+  background-color: var(--gray-100);
+  border-bottom-left-radius: 2px;
+}
+
+.chat-input-area {
+  display: flex;
+  padding: 12px;
+  border-top: 1px solid var(--gray-200);
+  gap: 8px;
+}
+
+/* Custom Cake thumbnail display */
+.cake-thumbnail {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  cursor: pointer;
+  border: 1px solid var(--gray-200);
+}
+
+/* Responsive queries */
+@media (max-width: 992px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  .chat-layout {
+    grid-template-columns: 1fr;
+  }
+  .chat-users-list {
+    display: none; /* simple mobile fallback */
+  }
+}

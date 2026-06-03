@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sản Phẩm Bánh Ngọt - Sweet Pink Bakery & Tea Break</title>
+  <link rel="stylesheet" href="/public/css/style.css">
+  <link rel="stylesheet" href="/public/css/product.css">
+</head>
+<body>
+
+  <!-- Navigation Header -->
+  <header>
+    <div class="container navbar">
+      <a href="/index.html" class="logo">
+        <span class="logo-icon">🍰</span> Sweet Pink Bakery & Tea Break
+      </a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="/index.html">Trang chủ</a></li>
+          <li><a href="/products.html" class="active">Sản phẩm bánh</a></li>
+          <li><a href="/teabreak.html">Đặt tiệc Tea Break</a></li>
+          <li><a href="/order-tracking.html">Theo dõi đơn</a></li>
+          <li><a href="/contact.html">Liên hệ</a></li>
+        </ul>
+      </nav>
+      <div class="nav-actions" id="nav-actions">
+        <!-- Loaded dynamically -->
+      </div>
+      <button class="mobile-nav-toggle">☰</button>
+    </div>
+  </header>
+
+  <!-- Products catalog layout -->
+  <main class="container" style="padding: 40px 0;">
+    <div class="catalog-toolbar">
+      <div class="search-box">
+        <form id="catalog-search-form" onsubmit="event.preventDefault(); window.changePage(1);">
+          <input type="text" id="search-input" class="form-control" placeholder="Tìm kiếm bánh (tên, mã bánh như MST01, BKM01)...">
+        </form>
+      </div>
+      <div class="sort-box">
+        <select id="sort-select" class="form-control" onchange="window.changePage(1)">
+          <option value="newest">Mới nhất</option>
+          <option value="bestseller">Bán chạy nhất</option>
+          <option value="price_asc">Giá tăng dần</option>
+          <option value="price_desc">Giá giảm dần</option>
+          <option value="rating">Đánh giá cao nhất</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="product-layout">
+      <!-- Sidebar filters column -->
+      <aside class="filter-sidebar">
+        <form id="catalog-filters-form">
+          <!-- Filter Categories -->
+          <div class="filter-section">
+            <h4>Danh mục bánh</h4>
+            <div class="filter-options" id="category-filter-list">
+              <!-- Dynamically loaded categories or fallback static options -->
+              <label class="filter-checkbox">
+                <input type="checkbox" name="category" value="" checked onclick="location.href='/products.html'">
+                <span>Tất cả bánh</span>
+              </label>
+              <label class="filter-checkbox">
+                <input type="checkbox" name="category" value="mini-cake">
+                <span>Mini Cake nhỏ xinh</span>
+              </label>
+              <label class="filter-checkbox">
+                <input type="checkbox" name="category" value="tea-break-packages">
+                <span>Tea Break Packages</span>
+              </label>
+              <label class="filter-checkbox">
+                <input type="checkbox" name="category" value="corporate-orders">
+                <span>Corporate Orders</span>
+              </label>
+              <label class="filter-checkbox">
+                <input type="checkbox" name="category" value="banh-su-kem">
+                <span>Bánh su kem ngọt ngào</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Filter Price -->
+          <div class="filter-section">
+            <h4>Khoảng giá (VNĐ)</h4>
+            <div class="price-range-inputs">
+              <input type="number" id="price-min" placeholder="Từ" min="0">
+              <span>&mdash;</span>
+              <input type="number" id="price-max" placeholder="Đến" min="0">
+            </div>
+          </div>
+
+          <!-- Filter Flavor -->
+          <div class="filter-section">
+            <h4>Hương vị bánh</h4>
+            <div class="filter-options">
+              <label class="filter-checkbox"><input type="checkbox" name="flavor" value="Dâu tây"> <span>Dâu tây</span></label>
+              <label class="filter-checkbox"><input type="checkbox" name="flavor" value="Vani"> <span>Vani</span></label>
+              <label class="filter-checkbox"><input type="checkbox" name="flavor" value="Matcha"> <span>Trà xanh Matcha</span></label>
+              <label class="filter-checkbox"><input type="checkbox" name="flavor" value="Tiramisu"> <span>Tiramisu</span></label>
+              <label class="filter-checkbox"><input type="checkbox" name="flavor" value="Socola"> <span>Sô cô la</span></label>
+              <label class="filter-checkbox"><input type="checkbox" name="flavor" value="Phô mai"> <span>Phô mai</span></label>
+            </div>
+          </div>
+
+          <!-- Filter Size -->
+          <div class="filter-section">
+            <h4>Kích thước</h4>
+            <div class="filter-options">
+              <label class="filter-checkbox"><input type="checkbox" name="size" value="16cm"> <span>Đường kính 16cm</span></label>
+              <label class="filter-checkbox"><input type="checkbox" name="size" value="20cm"> <span>Đường kính 20cm</span></label>
+              <label class="filter-checkbox"><input type="checkbox" name="size" value="24cm"> <span>Đường kính 24cm</span></label>
+              <label class="filter-checkbox"><input type="checkbox" name="size" value="Hộp 6 cái"> <span>Hộp cupcake 6 cái</span></label>
+            </div>
+          </div>
+
+          <!-- Filter Collections -->
+          <div class="filter-section" style="border-bottom: none; margin-bottom: 0;">
+            <h4>Bộ sưu tập bánh</h4>
+            <div class="filter-options">
+              <label class="filter-checkbox"><input type="checkbox" id="filter-featured"> <span>Bánh nổi bật</span></label>
+              <label class="filter-checkbox"><input type="checkbox" id="filter-bestseller"> <span>Bánh bán chạy</span></label>
+              <label class="filter-checkbox"><input type="checkbox" id="filter-seasonal"> <span>Bánh theo mùa</span></label>
+            </div>
+          </div>
+        </form>
+      </aside>
+
+      <!-- Products Grid Display column -->
+      <div>
+        <div class="grid-3" id="product-grid">
+          <!-- Loaded dynamically via public/js/product.js -->
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" id="pagination">
+          <!-- Page buttons -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-bottom" style="padding-top: 0; border-top: none;">
+      <p>&copy; 2026 Sweet Pink Bakery & Tea Break. Tiệm bánh ngọt mini & Tiệc Tea Break.</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/public/js/main.js"></script>
+  <script src="/public/js/product.js"></script>
+  <script>
+    // Sync checkboxes if URL parameter indicates category
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const catParam = params.get('category');
+      if (catParam) {
+        document.querySelectorAll('input[name="category"]').forEach(box => {
+          box.checked = (box.value === catParam);
+        });
+      }
+    });
+  </script>
+</body>
+</html>

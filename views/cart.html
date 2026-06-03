@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Giỏ Hàng Của Bạn - Sweet Pink Bakery & Tea Break</title>
+  <link rel="stylesheet" href="/public/css/style.css">
+  <link rel="stylesheet" href="/public/css/cart.css">
+</head>
+<body>
+
+  <!-- Navigation Header -->
+  <header>
+    <div class="container navbar">
+      <a href="/index.html" class="logo">
+        <span class="logo-icon">🍰</span> Sweet Pink Bakery & Tea Break
+      </a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="/index.html">Trang chủ</a></li>
+          <li><a href="/products.html">Sản phẩm bánh</a></li>
+          <li><a href="/teabreak.html">Đặt tiệc Tea Break</a></li>
+          <li><a href="/order-tracking.html">Theo dõi đơn</a></li>
+          <li><a href="/contact.html">Liên hệ</a></li>
+        </ul>
+      </nav>
+      <div class="nav-actions" id="nav-actions">
+        <!-- Loaded dynamically -->
+      </div>
+      <button class="mobile-nav-toggle">☰</button>
+    </div>
+  </header>
+
+  <!-- Cart page layout -->
+  <main class="container" style="padding: 40px 0;">
+    <h2 style="font-size: 28px; margin-bottom: 24px; color: var(--dark);">Giỏ Hàng Của Bạn</h2>
+
+    <div class="cart-layout">
+      <!-- Items table column -->
+      <div class="card" style="padding: 16px; overflow-x: auto;">
+        <table class="cart-table">
+          <thead>
+            <tr>
+              <th>Sản phẩm bánh</th>
+              <th>Đơn giá</th>
+              <th>Số lượng</th>
+              <th>Thành tiền</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="cart-table-body">
+            <tr>
+              <td colspan="5" class="text-center" style="padding: 40px;">Đang nạp thông tin giỏ hàng của bạn...</td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <div style="margin-top: 24px; display: flex; justify-content: space-between;">
+          <a href="/products.html" class="btn btn-outline" style="padding: 10px 20px; font-size: 14px;">&larr; Tiếp tục chọn bánh</a>
+          <button class="btn btn-secondary" onclick="clearWholeCart()" style="padding: 10px 20px; font-size: 14px; background-color: var(--danger-color); color: var(--danger);">Xóa sạch giỏ hàng</button>
+        </div>
+      </div>
+
+      <!-- Totals & Coupons sidebar column -->
+      <div class="summary-card" id="cart-summary-card">
+        <!-- Loaded dynamically via public/js/cart.js -->
+        <h3>Tóm tắt đơn hàng</h3>
+        <div style="padding: 20px 0; text-align: center; color: var(--gray-600);">Đang tính toán totals...</div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-bottom" style="padding-top: 0; border-top: none;">
+      <p>&copy; 2026 Sweet Pink Bakery & Tea Break. Tiệm bánh ngọt mini & Tiệc Tea Break.</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/public/js/main.js"></script>
+  <script src="/public/js/cart.js"></script>
+  <script>
+    // Clear entire cart trigger handler
+    const clearWholeCart = async () => {
+      if (!confirm('Bạn có thực sự muốn xóa toàn bộ sản phẩm trong giỏ hàng không?')) return;
+
+      try {
+        const data = await fetchAPI('/api/cart', { method: 'DELETE' });
+        if (data.success) {
+          showToast(data.message, 'success');
+          // Reload page
+          window.location.reload();
+        }
+      } catch (err) {}
+    };
+  </script>
+</body>
+</html>

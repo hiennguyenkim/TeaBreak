@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Theo Dõi Đơn Hàng - Sweet Pink Bakery & Tea Break</title>
+  <link rel="stylesheet" href="/public/css/style.css">
+  <link rel="stylesheet" href="/public/css/cart.css">
+  <style>
+    .track-details-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 24px;
+      font-size: 14px;
+    }
+    .track-details-table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .track-details-table td:first-child {
+      font-weight: 600;
+      width: 40%;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Header -->
+  <header>
+    <div class="container navbar">
+      <a href="/index.html" class="logo">
+        <span class="logo-icon">🍰</span> Sweet Pink Bakery & Tea Break
+      </a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="/index.html">Trang chủ</a></li>
+          <li><a href="/products.html">Sản phẩm bánh</a></li>
+          <li><a href="/teabreak.html">Đặt tiệc Tea Break</a></li>
+          <li><a href="/order-tracking.html" class="active">Theo dõi đơn</a></li>
+          <li><a href="/contact.html">Liên hệ</a></li>
+        </ul>
+      </nav>
+      <div class="nav-actions" id="nav-actions">
+        <!-- Loaded dynamically -->
+      </div>
+      <button class="mobile-nav-toggle">☰</button>
+    </div>
+  </header>
+
+  <!-- Main Tracking Wrapper -->
+  <main class="container" style="padding: 60px 0;">
+    <div class="tracking-wrapper">
+      <div class="tracking-header">
+        <h2 style="font-size: 32px; color: var(--primary-hover); margin-bottom: 8px;">Theo Dõi Đơn Hàng</h2>
+        <p class="text-muted">Nhập mã đơn hàng và số điện thoại đặt hàng để tra cứu trạng thái giao bánh tức thời</p>
+      </div>
+
+      <!-- Tracking Search Form -->
+      <div class="card" style="margin-bottom: 40px;">
+        <form id="tracking-search-form" onsubmit="executeOrderTracking(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="track-order-code">Mã đơn hàng:</label>
+              <input type="text" id="track-order-code" class="form-control" placeholder="Ví dụ: SPB123456" required>
+            </div>
+            <div class="form-group">
+              <label for="track-phone">Số điện thoại đặt bánh:</label>
+              <input type="tel" id="track-phone" class="form-control" placeholder="09xxxxxxxx" required>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Tra cứu đơn hàng</button>
+        </form>
+      </div>
+
+      <!-- Tracking Timeline Results (Initially Hidden) -->
+      <div class="card" id="track-results-panel" style="display: none;">
+        <h3 style="border-bottom: 2px solid var(--primary-light); padding-bottom: 8px; margin-bottom: 20px;">Trạng Thái Đơn Hàng <span id="track-code-title" style="color: var(--primary-hover);">#...</span></h3>
+        
+        <!-- Interactive timeline graphic -->
+        <div class="tracking-timeline" id="track-timeline-graphic">
+          <div class="timeline-step" id="step-pending">
+            <div class="timeline-node"></div>
+            <div class="timeline-title">Chờ xác nhận</div>
+            <div class="timeline-desc">Đơn đặt bánh mới được khởi tạo và đang chờ nhân viên kiểm duyệt thông tin.</div>
+          </div>
+          <div class="timeline-step" id="step-confirmed">
+            <div class="timeline-node"></div>
+            <div class="timeline-title">Đã xác nhận đơn</div>
+            <div class="timeline-desc">Cửa hàng đã xác thực đơn đặt và đang lập lịch sản xuất.</div>
+          </div>
+          <div class="timeline-step" id="step-preparing">
+            <div class="timeline-node"></div>
+            <div class="timeline-title">Bếp đang làm bánh</div>
+            <div class="timeline-desc">Bếp trưởng đang nhào bột, nướng cốt bánh và thực hiện phủ kem trang trí tỉ mỉ.</div>
+          </div>
+          <div class="timeline-step" id="step-shipping">
+            <div class="timeline-node"></div>
+            <div class="timeline-title">Shipper đang giao hàng</div>
+            <div class="timeline-desc">Bánh ngọt được đóng hộp lạnh và đang được vận chuyển hỏa tốc đến địa chỉ của bạn.</div>
+          </div>
+          <div class="timeline-step" id="step-completed">
+            <div class="timeline-node"></div>
+            <div class="timeline-title">Hoàn thành đơn hàng</div>
+            <div class="timeline-desc">Giao bánh thành công! Cảm ơn bạn đã đồng hành cùng Sweet Pink Bakery & Tea Break.</div>
+          </div>
+        </div>
+
+        <!-- Tracking details specs table -->
+        <h4 style="margin-top: 32px; border-bottom: 1px dashed var(--gray-200); padding-bottom: 8px;">Chi tiết nhận hàng</h4>
+        <table class="track-details-table">
+          <tr>
+            <td>Người nhận:</td>
+            <td id="track-name-cell">...</td>
+          </tr>
+          <tr>
+            <td>Địa chỉ giao bánh:</td>
+            <td id="track-address-cell">...</td>
+          </tr>
+          <tr>
+            <td>Thời điểm giao nhận:</td>
+            <td id="track-delivery-cell">...</td>
+          </tr>
+          <tr>
+            <td>Phương thức thanh toán:</td>
+            <td id="track-payment-method-cell">...</td>
+          </tr>
+          <tr>
+            <td>Trạng thái thanh toán:</td>
+            <td id="track-payment-status-cell">...</td>
+          </tr>
+          <tr>
+            <td>Tổng số tiền thanh toán:</td>
+            <td id="track-total-cell" style="font-weight: 700; color: var(--primary-hover);">...</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-bottom" style="padding-top: 0; border-top: none;">
+      <p>&copy; 2026 Sweet Pink Bakery & Tea Break. Tiệm bánh ngọt mini & Tiệc Tea Break.</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/public/js/main.js"></script>
+  <script>
+    // Handle URL parameters automatically on search load
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get('code');
+      const phone = params.get('phone');
+
+      if (code && phone) {
+        document.getElementById('track-order-code').value = code;
+        document.getElementById('track-phone').value = phone;
+        triggerTrackingFetch(code, phone);
+      }
+    });
+
+    // Execute Form Submit
+    const executeOrderTracking = (e) => {
+      e.preventDefault();
+      const code = document.getElementById('track-order-code').value.trim();
+      const phone = document.getElementById('track-phone').value.trim();
+      triggerTrackingFetch(code, phone);
+    };
+
+    // Main fetch tracking logic
+    const triggerTrackingFetch = async (orderCode, phone) => {
+      const panel = document.getElementById('track-results-panel');
+      
+      try {
+        const data = await fetchAPI(`/api/orders/track?orderCode=${orderCode}&phone=${phone}`);
+        if (data.success && data.order) {
+          panel.style.display = 'block';
+          const order = data.order;
+
+          // Fill details table
+          document.getElementById('track-code-title').textContent = `#${order.orderCode}`;
+          document.getElementById('track-name-cell').textContent = order.fullname;
+          document.getElementById('track-address-cell').textContent = order.address;
+          document.getElementById('track-delivery-cell').textContent = `${new Date(order.deliveryDate).toLocaleDateString('vi-VN')} (${order.deliveryTime})`;
+          document.getElementById('track-payment-method-cell').textContent = translatePaymentMethod(order.paymentMethod);
+          document.getElementById('track-payment-status-cell').textContent = translatePaymentStatus(order.paymentStatus);
+          document.getElementById('track-total-cell').textContent = `${order.finalAmount.toLocaleString('vi-VN')}đ`;
+
+          // Redraw timeline steps active statuses
+          updateTimelineGraphic(order.orderStatus);
+
+          // Scroll to results
+          panel.scrollIntoView({ behavior: 'smooth' });
+        }
+      } catch (err) {}
+    };
+
+    // Helper translators
+    const translatePaymentMethod = (method) => {
+      const methods = {
+        cod: 'Thanh toán tiền mặt khi giao bánh (COD)',
+        bank_transfer: 'Chuyển khoản ngân hàng',
+        e_wallet: 'Ví điện tử',
+      };
+      return methods[method] || method;
+    };
+
+    const translatePaymentStatus = (status) => {
+      const statuses = {
+        unpaid: 'Chưa thanh toán',
+        pending_confirm: 'Chờ nhân viên duyệt ảnh chuyển khoản',
+        paid: 'Đã thanh toán thành công',
+        failed: 'Thanh toán thất bại',
+        refunded: 'Đã hoàn trả tiền',
+      };
+      return statuses[status] || status;
+    };
+
+    // Manage timeline graphic states
+    const updateTimelineGraphic = (status) => {
+      // Clear all active/completed classes
+      const steps = ['pending', 'confirmed', 'preparing', 'shipping', 'completed'];
+      steps.forEach(st => {
+        const el = document.getElementById(`step-${st}`);
+        if (el) el.className = 'timeline-step';
+      });
+
+      // Special handling for cancelled
+      if (status === 'cancelled') {
+        const pendingEl = document.getElementById('step-pending');
+        if (pendingEl) {
+          pendingEl.className = 'timeline-step active';
+          pendingEl.querySelector('.timeline-title').innerHTML = 'Đơn hàng đã bị hủy';
+          pendingEl.querySelector('.timeline-desc').innerHTML = 'Đơn đặt bánh này đã bị hủy bỏ theo yêu cầu của khách hàng hoặc do lỗi kỹ thuật.';
+        }
+        return;
+      }
+
+      // Re-translate canceled text back if it was set
+      const pendingEl = document.getElementById('step-pending');
+      if (pendingEl) {
+        pendingEl.querySelector('.timeline-title').innerHTML = 'Chờ xác nhận';
+        pendingEl.querySelector('.timeline-desc').innerHTML = 'Đơn đặt bánh mới được khởi tạo và đang chờ nhân viên kiểm duyệt thông tin.';
+      }
+
+      // Determine how far to light up
+      let currentIdx = steps.indexOf(status);
+      if (status === 'delivered') currentIdx = 3; // mapping delivered to shipping step/complete
+      if (status === 'refunded') currentIdx = 4;
+
+      steps.forEach((st, idx) => {
+        const el = document.getElementById(`step-${st}`);
+        if (!el) return;
+
+        if (idx < currentIdx) {
+          el.className = 'timeline-step completed';
+        } else if (idx === currentIdx) {
+          el.className = 'timeline-step active';
+        }
+      });
+    };
+  </script>
+</body>
+</html>

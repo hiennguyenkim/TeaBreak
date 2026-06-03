@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng Nhập - Sweet Pink Bakery & Tea Break</title>
+  <link rel="stylesheet" href="/public/css/style.css">
+  <link rel="stylesheet" href="/public/css/auth.css">
+</head>
+<body>
+
+  <!-- Navigation Header -->
+  <header>
+    <div class="container navbar">
+      <a href="/index.html" class="logo">
+        <span class="logo-icon">🍰</span> Sweet Pink Bakery & Tea Break
+      </a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="/index.html">Trang chủ</a></li>
+          <li><a href="/products.html">Sản phẩm bánh</a></li>
+          <li><a href="/teabreak.html">Đặt tiệc Tea Break</a></li>
+          <li><a href="/order-tracking.html">Theo dõi đơn</a></li>
+          <li><a href="/contact.html">Liên hệ</a></li>
+        </ul>
+      </nav>
+      <div class="nav-actions" id="nav-actions">
+        <a href="/login.html" class="btn btn-secondary" style="padding: 8px 16px; font-size: 14px;">Đăng nhập</a>
+      </div>
+      <button class="mobile-nav-toggle">☰</button>
+    </div>
+  </header>
+
+  <!-- Login Form Wrapper -->
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-header">
+        <h2>Đăng Nhập</h2>
+        <p>Chào mừng bạn quay lại với Sweet Pink Bakery & Tea Break</p>
+      </div>
+      
+      <form id="login-form">
+        <div class="form-group">
+          <label for="login-email">Địa chỉ Email:</label>
+          <input type="email" id="login-email" class="form-control" placeholder="name@domain.com" required>
+        </div>
+        <div class="form-group" style="margin-bottom: 8px;">
+          <label for="login-password">Mật khẩu:</label>
+          <input type="password" id="login-password" class="form-control" placeholder="••••••••" required>
+        </div>
+        <a href="/forgot-password.html" class="forgot-link">Quên mật khẩu?</a>
+        
+        <button type="submit" class="btn btn-primary btn-block">Đăng nhập</button>
+      </form>
+
+      <div class="auth-footer">
+        Chưa có tài khoản khách hàng? <a href="/register.html">Đăng ký ngay</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-bottom" style="padding-top: 0; border-top: none;">
+      <p>&copy; 2026 Sweet Pink Bakery & Tea Break. Tiệm bánh ngọt mini & Tiệc Tea Break.</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/public/js/main.js"></script>
+  <script src="/public/js/auth.js"></script>
+</body>
+</html>

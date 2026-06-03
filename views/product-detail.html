@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chi Tiết Bánh - Sweet Pink Bakery & Tea Break</title>
+  <link rel="stylesheet" href="/public/css/style.css">
+  <link rel="stylesheet" href="/public/css/product.css">
+</head>
+<body>
+
+  <!-- Navigation Header -->
+  <header>
+    <div class="container navbar">
+      <a href="/index.html" class="logo">
+        <span class="logo-icon">🍰</span> Sweet Pink Bakery & Tea Break
+      </a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="/index.html">Trang chủ</a></li>
+          <li><a href="/products.html">Sản phẩm bánh</a></li>
+          <li><a href="/teabreak.html">Đặt tiệc Tea Break</a></li>
+          <li><a href="/order-tracking.html">Theo dõi đơn</a></li>
+          <li><a href="/contact.html">Liên hệ</a></li>
+        </ul>
+      </nav>
+      <div class="nav-actions" id="nav-actions">
+        <!-- Loaded dynamically -->
+      </div>
+      <button class="mobile-nav-toggle">☰</button>
+    </div>
+  </header>
+
+  <!-- Main Details Page -->
+  <main class="container" id="product-detail-container" style="padding: 20px 0;">
+    <div class="text-center" style="padding: 100px 0;">Đang nạp thông tin chi tiết của bánh...</div>
+  </main>
+
+  <!-- Product Reviews & Testimonials Section -->
+  <section class="container product-reviews-section">
+    <div class="reviews-header">
+      <h2>Đánh giá từ khách mua hàng</h2>
+      <div class="reviews-summary">
+        <span class="rating-big" id="rating-big-value">5.0</span>
+        <div style="font-size: 14px;">
+          <div style="color: var(--warning);">⭐⭐⭐⭐⭐</div>
+          <div class="text-muted" id="reviews-summary-count">Dựa trên 0 đánh giá thực tế</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="review-list" id="reviews-list">
+      <!-- Loaded dynamically via product.js -->
+      <div class="text-center" style="padding: 20px; color: var(--gray-600);">Đang nạp bình luận nhận xét...</div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-bottom" style="padding-top: 0; border-top: none;">
+      <p>&copy; 2026 Sweet Pink Bakery & Tea Break. Tiệm bánh ngọt mini & Tiệc Tea Break.</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/public/js/main.js"></script>
+  <script src="/public/js/product.js"></script>
+</body>
+</html>

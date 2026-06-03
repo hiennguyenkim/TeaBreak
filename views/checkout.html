@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thanh Toán Đơn Hàng - Sweet Pink Bakery & Tea Break</title>
+  <link rel="stylesheet" href="/public/css/style.css">
+  <link rel="stylesheet" href="/public/css/cart.css">
+</head>
+<body>
+
+  <!-- Navigation Header -->
+  <header>
+    <div class="container navbar">
+      <a href="/index.html" class="logo">
+        <span class="logo-icon">🍰</span> Sweet Pink Bakery & Tea Break
+      </a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="/index.html">Trang chủ</a></li>
+          <li><a href="/products.html">Sản phẩm bánh</a></li>
+          <li><a href="/teabreak.html">Đặt tiệc Tea Break</a></li>
+          <li><a href="/order-tracking.html">Theo dõi đơn</a></li>
+          <li><a href="/contact.html">Liên hệ</a></li>
+        </ul>
+      </nav>
+      <div class="nav-actions" id="nav-actions">
+        <!-- Loaded dynamically -->
+      </div>
+      <button class="mobile-nav-toggle">☰</button>
+    </div>
+  </header>
+
+  <!-- Checkout main layout -->
+  <main class="container" style="padding: 40px 0;">
+    <h2 style="font-size: 28px; margin-bottom: 24px; color: var(--dark);">Thanh Toán Đơn Hàng</h2>
+
+    <div class="checkout-layout">
+      <!-- Shipping Form column -->
+      <div class="card">
+        <h3 style="margin-bottom: 20px; border-bottom: 2px solid var(--primary-light); padding-bottom: 8px;">Thông tin giao hàng</h3>
+        
+        <!-- Address Book lookup dropdown -->
+        <select id="address-book-select" class="form-control" style="margin-bottom: 24px; display: none;">
+          <!-- Options added dynamically -->
+        </select>
+
+        <form id="checkout-form">
+          <div class="form-group">
+            <label for="checkout-name">Họ và tên người nhận:</label>
+            <input type="text" id="checkout-name" class="form-control" placeholder="Nguyen Van A" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="checkout-phone">Số điện thoại nhận hàng:</label>
+              <input type="tel" id="checkout-phone" class="form-control" placeholder="09xxxxxxxx" required>
+            </div>
+            <div class="form-group">
+              <label for="checkout-email">Địa chỉ Email liên hệ:</label>
+              <input type="email" id="checkout-email" class="form-control" placeholder="name@domain.com" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="checkout-address">Địa chỉ nhận bánh chi tiết:</label>
+            <input type="text" id="checkout-address" class="form-control" placeholder="Số nhà, tên đường, phường, quận..." required>
+          </div>
+
+          <h3 style="margin-top: 32px; margin-bottom: 20px; border-bottom: 2px solid var(--primary-light); padding-bottom: 8px;">Thời gian nhận bánh</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="checkout-date">Ngày nhận bánh (Đặt trước tối thiểu 24h):</label>
+              <input type="date" id="checkout-date" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label for="checkout-time">Khung giờ giao bánh:</label>
+              <select id="checkout-time" class="form-control" required>
+                <option value="08:00 - 10:00">08:00 - 10:00 (Sáng sớm)</option>
+                <option value="10:00 - 12:00">10:00 - 12:00 (Cuối sáng)</option>
+                <option value="12:00 - 14:00">12:00 - 14:00 (Trưa trưa)</option>
+                <option value="14:00 - 16:00">14:00 - 16:00 (Đầu chiều)</option>
+                <option value="16:00 - 18:00">16:00 - 18:00 (Xế chiều)</option>
+                <option value="18:00 - 20:00">18:00 - 20:00 (Buổi tối)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="checkout-note">Lời ghi chú / Yêu cầu riêng cho bếp & set-up:</label>
+            <textarea id="checkout-note" class="form-control" placeholder="Ghi chú cho bếp bánh hoặc shipper giao hàng..."></textarea>
+          </div>
+
+          <h3 style="margin-top: 32px; margin-bottom: 20px; border-bottom: 2px solid var(--primary-light); padding-bottom: 8px;">Phương thức thanh toán</h3>
+          <div class="payment-method-selector">
+            <label class="payment-option active" onclick="togglePaymentMethod('cod')">
+              <input type="radio" name="paymentMethod" value="cod" checked>
+              <div>
+                <strong>Thanh toán khi nhận hàng (COD)</strong>
+                <div style="font-size: 12px; color: var(--gray-600);">Nhận bánh và thanh toán tiền mặt trực tiếp cho shipper.</div>
+              </div>
+            </label>
+            <label class="payment-option" onclick="togglePaymentMethod('bank_transfer')">
+              <input type="radio" name="paymentMethod" value="bank_transfer">
+              <div>
+                <strong>Chuyển khoản ngân hàng (VietQR)</strong>
+                <div style="font-size: 12px; color: var(--gray-600);">Chuyển khoản qua tài khoản ngân hàng của tiệm để xác nhận đơn.</div>
+              </div>
+            </label>
+            <label class="payment-option" onclick="togglePaymentMethod('e_wallet')">
+              <input type="radio" name="paymentMethod" value="e_wallet">
+              <div>
+                <strong>Ví điện tử (Momo / ZaloPay)</strong>
+                <div style="font-size: 12px; color: var(--gray-600);">Thanh toán chuyển ví siêu tốc.</div>
+              </div>
+            </label>
+          </div>
+
+          <!-- Bank transfer instructions panel shown dynamically -->
+          <div id="bank-instructions" class="bank-instructions"></div>
+
+          <button type="submit" class="btn btn-primary btn-block" style="margin-top: 32px; padding: 16px;">Xác nhận đặt hàng ngay</button>
+        </form>
+      </div>
+
+      <!-- Items Summary sidebar column -->
+      <div class="summary-card" id="checkout-items-list">
+        <!-- Loaded dynamically via public/js/checkout.js -->
+        <h3>Tóm tắt đơn hàng</h3>
+        <div style="padding: 20px 0; text-align: center; color: var(--gray-600);">Đang tải tổng tiền thanh toán...</div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-bottom" style="padding-top: 0; border-top: none;">
+      <p>&copy; 2026 Sweet Pink Bakery & Tea Break. Tiệm bánh ngọt mini & Tiệc Tea Break.</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/public/js/main.js"></script>
+  <script src="/public/js/checkout.js"></script>
+</body>
+</html>

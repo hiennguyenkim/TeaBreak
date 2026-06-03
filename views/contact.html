@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Liên Hệ & Tư Vấn - Sweet Pink Bakery & Tea Break</title>
+  <link rel="stylesheet" href="/public/css/style.css">
+  <style>
+    .contact-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 48px;
+      margin: 40px 0;
+    }
+    .contact-info-list {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .contact-info-card {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .contact-info-icon {
+      font-size: 28px;
+      background-color: var(--primary-light);
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-hover);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Header -->
+  <header>
+    <div class="container navbar">
+      <a href="/index.html" class="logo">
+        <span class="logo-icon">🍰</span> Sweet Pink Bakery & Tea Break
+      </a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="/index.html">Trang chủ</a></li>
+          <li><a href="/products.html">Sản phẩm bánh</a></li>
+          <li><a href="/teabreak.html">Đặt tiệc Tea Break</a></li>
+          <li><a href="/order-tracking.html">Theo dõi đơn</a></li>
+          <li><a href="/contact.html" class="active">Liên hệ</a></li>
+        </ul>
+      </nav>
+      <div class="nav-actions" id="nav-actions">
+        <!-- Loaded dynamically -->
+      </div>
+      <button class="mobile-nav-toggle">☰</button>
+    </div>
+  </header>
+
+  <!-- Contact layout content -->
+  <main class="container" style="padding: 40px 0;">
+    <h2 style="font-size: 32px; text-align: center; margin-bottom: 8px; color: var(--dark);">Liên Hệ Với Chúng Tôi</h2>
+    <p class="text-muted text-center" style="margin-bottom: 48px; max-width: 600px; margin-left: auto; margin-right: auto;">Mọi thắc mắc về thực đơn bánh mini, thời gian giao hàng hoặc yêu cầu tư vấn set-up tiệc ngọt, tiệc trà Tea Break doanh nghiệp trọn gói, xin vui lòng gửi tin nhắn cho chúng tôi.</p>
+
+    <div class="contact-layout">
+      <!-- Left Contact Info Details -->
+      <div class="contact-info-list">
+        <div class="contact-info-card">
+          <div class="contact-info-icon">📍</div>
+          <div>
+            <h4 style="font-size: 16px; margin-bottom: 4px;">Địa chỉ cửa hàng</h4>
+            <p style="color: var(--gray-600); font-size: 14px;">123 Đường Hồng, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh</p>
+          </div>
+        </div>
+        <div class="contact-info-card">
+          <div class="contact-info-icon">📞</div>
+          <div>
+            <h4 style="font-size: 16px; margin-bottom: 4px;">Hotline đặt bánh nhanh</h4>
+            <p style="color: var(--gray-600); font-size: 14px;">0988.888.888 (Zalo hỗ trợ 24/7)</p>
+          </div>
+        </div>
+        <div class="contact-info-card">
+          <div class="contact-info-icon">📧</div>
+          <div>
+            <h4 style="font-size: 16px; margin-bottom: 4px;">Email liên hệ hỗ trợ</h4>
+            <p style="color: var(--gray-600); font-size: 14px;">support@sweetpinkbakery.vn</p>
+          </div>
+        </div>
+        <div class="contact-info-card">
+          <div class="contact-info-icon">🕒</div>
+          <div>
+            <h4 style="font-size: 16px; margin-bottom: 4px;">Khung giờ mở cửa</h4>
+            <p style="color: var(--gray-600); font-size: 14px;">Mở cửa từ 07:30 - 21:00 hàng ngày (Cả ngày lễ)</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Contact Form -->
+      <div class="card">
+        <h3 style="margin-bottom: 20px; border-bottom: 2px solid var(--primary-light); padding-bottom: 8px;">Gửi tin nhắn tư vấn</h3>
+        <form id="contact-form" onsubmit="submitContactTicket(event)">
+          <div class="form-group">
+            <label for="contact-name">Họ và tên của bạn:</label>
+            <input type="text" id="contact-name" class="form-control" placeholder="Nguyen Van A" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="contact-email">Địa chỉ Email:</label>
+              <input type="email" id="contact-email" class="form-control" placeholder="name@domain.com" required>
+            </div>
+            <div class="form-group">
+              <label for="contact-phone">Số điện thoại:</label>
+              <input type="tel" id="contact-phone" class="form-control" placeholder="09xxxxxxxx" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="contact-subject">Chủ đề liên hệ:</label>
+              <input type="text" id="contact-subject" class="form-control" placeholder="Tư vấn tiệc Tea Break / Góp ý dịch vụ..." required>
+            </div>
+            <div class="form-group">
+              <label for="contact-ordercode">Mã đơn hàng liên quan (Tùy chọn):</label>
+              <input type="text" id="contact-ordercode" class="form-control" placeholder="Ví dụ: SPB99812">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="contact-content">Nội dung câu hỏi / Yêu cầu khiếu nại:</label>
+            <textarea id="contact-content" class="form-control" placeholder="Viết chi tiết thắc mắc của bạn..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Gửi tin nhắn liên hệ</button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-bottom" style="padding-top: 0; border-top: none;">
+      <p>&copy; 2026 Sweet Pink Bakery & Tea Break. Tiệm bánh ngọt mini & Tiệc Tea Break.</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/public/js/main.js"></script>
+  <script>
+    const submitContactTicket = async (e) => {
+      e.preventDefault();
+      
+      const name = document.getElementById('contact-name').value.trim();
+      const email = document.getElementById('contact-email').value.trim();
+      const phone = document.getElementById('contact-phone').value.trim();
+      const subject = document.getElementById('contact-subject').value.trim();
+      const orderCode = document.getElementById('contact-ordercode').value.trim();
+      const content = document.getElementById('contact-content').value.trim();
+
+      const payload = { name, email, phone, subject, orderCode, content };
+
+      try {
+        const data = await fetchAPI('/api/contacts', {
+          method: 'POST',
+          body: JSON.stringify(payload),
+        });
+
+        if (data.success) {
+          showToast(data.message, 'success');
+          document.getElementById('contact-form').reset();
+        }
+      } catch (err) {}
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nhân Viên Dashboard - Sweet Pink Bakery & Tea Break</title>
+  <link rel="stylesheet" href="/public/css/style.css">
+  <link rel="stylesheet" href="/public/css/user-dashboard.css">
+  <link rel="stylesheet" href="/public/css/staff-dashboard.css">
+  <link rel="stylesheet" href="/public/css/cart.css">
+</head>
+<body>
+
+  <!-- Navigation Header -->
+  <header>
+    <div class="container navbar">
+      <a href="/index.html" class="logo">
+        <span class="logo-icon">🍰</span> Sweet Pink Bakery & Tea Break
+      </a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="/index.html">Trang chủ</a></li>
+          <li><a href="/products.html">Sản phẩm bánh</a></li>
+          <li><a href="/teabreak.html">Đặt tiệc Tea Break</a></li>
+          <li><a href="/order-tracking.html">Theo dõi đơn</a></li>
+          <li><a href="/contact.html">Liên hệ</a></li>
+        </ul>
+      </nav>
+      <div class="nav-actions" id="nav-actions">
+        <!-- Loaded dynamically -->
+      </div>
+      <button class="mobile-nav-toggle">☰</button>
+    </div>
+  </header>
+
+  <!-- Staff Dashboard main container -->
+  <main class="container dashboard-wrapper" id="staff-dashboard-container">
+    <!-- Sidebar navigation -->
+    <aside class="dashboard-sidebar">
+      <div class="dashboard-user-card">
+        <div class="dashboard-user-avatar" style="border-color: var(--success); color: var(--success);">👩‍🍳</div>
+        <div class="dashboard-user-name">Nhân viên</div>
+        <div class="dashboard-user-role" style="background-color: #d1fae5; color: #059669;">Staff</div>
+      </div>
+      <ul class="dashboard-menu">
+        <li class="dashboard-menu-item active" data-tab="tab-stats">📊 Tổng quan công việc</li>
+        <li class="dashboard-menu-item" data-tab="tab-orders">📦 Quản lý đơn hàng</li>
+        <li class="dashboard-menu-item" data-tab="tab-custom">🍵 Yêu cầu tiệc Tea Break</li>
+        <li class="dashboard-menu-item" data-tab="tab-messages">✉️ Tin nhắn hỗ trợ</li>
+        <li class="dashboard-menu-item" data-tab="tab-manual">➕ Tạo đơn thủ công</li>
+      </ul>
+    </aside>
+
+    <!-- Main Content panels -->
+    <div class="dashboard-content" style="max-width: 100%;">
+      
+      <!-- Panel 1: Stats Overview & Low Stock Alerts -->
+      <section class="dashboard-tab-panel active" id="tab-stats">
+        <h3 class="tab-title">Tổng quan công việc hôm nay</h3>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <h3>Đơn chờ xác nhận</h3>
+            <div class="stat-value" id="stat-pending-orders">0</div>
+          </div>
+          <div class="stat-card">
+            <h3>Đơn đang chuẩn bị</h3>
+            <div class="stat-value" id="stat-preparing-orders">0</div>
+          </div>
+          <div class="stat-card">
+            <h3>Đơn đang giao</h3>
+            <div class="stat-value" id="stat-shipping-orders">0</div>
+          </div>
+          <div class="stat-card">
+            <h3>Đã hoàn thành hôm nay</h3>
+            <div class="stat-value" id="stat-completed-today">0</div>
+          </div>
+          <div class="stat-card">
+            <h3>Tea Break chờ duyệt</h3>
+            <div class="stat-value" id="stat-custom-cakes">0</div>
+          </div>
+          <div class="stat-card">
+            <h3>Phản hồi mới chưa xử lý</h3>
+            <div class="stat-value" id="stat-new-contacts">0</div>
+          </div>
+          <div class="stat-card" style="grid-column: span 2; border-color: var(--danger);">
+            <h3 style="color: var(--danger);">Sản phẩm sắp hết hàng (kho &le; 5)</h3>
+            <div class="stat-value" id="stat-low-stock" style="color: var(--danger);">0</div>
+          </div>
+        </div>
+
+        <h4 style="margin-bottom: 16px;">Danh sách sản phẩm cảnh báo hết hàng</h4>
+        <div class="data-table-wrapper card" style="padding: 0;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Tên sản phẩm bánh</th>
+                <th>Mã bánh</th>
+                <th>Tồn kho</th>
+                <th>Khuyến nghị</th>
+              </tr>
+            </thead>
+            <tbody id="low-stock-table-body">
+              <tr>
+                <td colspan="4" class="text-center">Đang nạp danh sách cảnh báo tồn kho...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Panel 2: Manage Orders -->
+      <section class="dashboard-tab-panel" id="tab-orders">
+        <h3 class="tab-title">Danh sách quản lý đơn hàng</h3>
+        
+        <div style="display: flex; justify-content: space-between; margin-bottom: 24px; gap: 16px; flex-wrap: wrap;">
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="btn btn-secondary filter-btn active" onclick="setOrderStatusFilter('')" style="padding: 8px 16px; font-size: 13px;">Tất cả</button>
+            <button class="btn btn-secondary filter-btn" onclick="setOrderStatusFilter('pending')" style="padding: 8px 16px; font-size: 13px;">Chờ duyệt</button>
+            <button class="btn btn-secondary filter-btn" onclick="setOrderStatusFilter('confirmed')" style="padding: 8px 16px; font-size: 13px;">Đã duyệt</button>
+            <button class="btn btn-secondary filter-btn" onclick="setOrderStatusFilter('preparing')" style="padding: 8px 16px; font-size: 13px;">Đang làm</button>
+            <button class="btn btn-secondary filter-btn" onclick="setOrderStatusFilter('shipping')" style="padding: 8px 16px; font-size: 13px;">Đang giao</button>
+            <button class="btn btn-secondary filter-btn" onclick="setOrderStatusFilter('completed')" style="padding: 8px 16px; font-size: 13px;">Hoàn thành</button>
+          </div>
+          <input type="text" id="order-search-input" class="form-control" style="max-width: 320px; padding: 8px 12px; font-size: 13px;" placeholder="Tìm theo mã đơn, SĐT khách...">
+        </div>
+
+        <div class="data-table-wrapper card" style="padding: 0;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Mã đơn</th>
+                <th>Khách hàng</th>
+                <th>Sản phẩm bánh đã đặt</th>
+                <th>Thực thu</th>
+                <th>Thời điểm nhận</th>
+                <th>Trạng thái đơn</th>
+                <th>Thanh toán</th>
+                <th>Hành động</th>
+              </tr>
+            </thead>
+            <tbody id="staff-orders-table-body">
+              <tr>
+                <td colspan="8" class="text-center">Đang tải danh sách đơn đặt hàng...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Panel 3: Tea Break Requests -->
+      <section class="dashboard-tab-panel" id="tab-custom">
+        <h3 class="tab-title">Yêu cầu đặt tiệc Tea Break & Corporate</h3>
+        <div id="custom-cakes-list">
+          <!-- Loaded dynamically -->
+        </div>
+      </section>
+
+      <!-- Panel 4: Combined Messages Panel -->
+      <section class="dashboard-tab-panel" id="tab-messages">
+        <h3 class="tab-title">Tin nhắn & Liên hệ khách hàng</h3>
+        
+        <div style="display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid var(--gray-200); padding-bottom: 12px;">
+          <button type="button" class="btn btn-secondary filter-btn active" id="subtab-chat-btn" onclick="switchMessagesSubTab('chat')">💬 Tin nhắn từ User</button>
+          <button type="button" class="btn btn-secondary filter-btn" id="subtab-contacts-btn" onclick="switchMessagesSubTab('contacts')">📩 Yêu cầu liên hệ</button>
+        </div>
+
+        <!-- Subtab 1: Live Helpdesk Chat -->
+        <div id="subtab-chat-content">
+          <div class="chat-layout">
+            <!-- Left side chat users -->
+            <div class="chat-users-list" id="chat-users-list">
+              <!-- Loaded dynamically -->
+            </div>
+            <!-- Right side chat messages area -->
+            <div class="chat-window">
+              <div class="chat-header">Hội thoại với: <span id="chat-header-name" style="color: var(--primary-hover);">Vui lòng chọn khách hàng</span></div>
+              <div class="chat-messages" id="chat-messages">
+                <div style="text-align: center; color: var(--gray-600); margin: auto;">Chọn một khách hàng ở cột bên trái để bắt đầu chat tư vấn.</div>
+              </div>
+              <div class="chat-input-area">
+                <input type="text" id="chat-input" class="form-control" placeholder="Nhập tin nhắn tư vấn gửi khách hàng...">
+                <button class="btn btn-primary" id="chat-send-btn">Gửi</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Subtab 2: Contacts & Inquiries -->
+        <div id="subtab-contacts-content" style="display: none;">
+          <div id="contacts-tickets-list">
+            <!-- Loaded dynamically -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel 6: Create Manual Order -->
+      <section class="dashboard-tab-panel" id="tab-manual">
+        <h3 class="tab-title">Tạo đơn đặt hàng trực tiếp</h3>
+        <form id="manual-order-form">
+          <!-- Customer info -->
+          <div class="form-row">
+            <div class="form-group">
+              <label>Họ và tên khách hàng:</label>
+              <input type="text" id="manual-customer-name" class="form-control" placeholder="Khách mua tại quầy" required>
+            </div>
+            <div class="form-group">
+              <label>Số điện thoại liên lạc:</label>
+              <input type="tel" id="manual-customer-phone" class="form-control" placeholder="09xxxxxxxx" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Địa chỉ Email (Nhận thông báo hóa đơn):</label>
+              <input type="email" id="manual-customer-email" class="form-control" placeholder="guest@gmail.com">
+            </div>
+            <div class="form-group">
+              <label>Địa chỉ giao nhận bánh ngọt:</label>
+              <input type="text" id="manual-customer-address" class="form-control" placeholder="Mua trực tiếp tại cửa hàng hoặc điền số nhà..." required>
+            </div>
+          </div>
+
+          <!-- Product Picker area -->
+          <h4 style="margin-top: 24px; margin-bottom: 16px; color: var(--primary-hover); border-bottom: 1px dashed var(--gray-200); padding-bottom: 8px;">Chọn sản phẩm bánh</h4>
+          <div style="display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 24px;">
+            <div class="form-group" style="margin-bottom: 0; flex-grow: 1;">
+              <label>Chọn loại bánh:</label>
+              <select id="manual-item-select" class="form-control">
+                <!-- Loaded dynamically -->
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom: 0; width: 100px;">
+              <label>Số lượng:</label>
+              <input type="number" id="manual-item-qty" class="form-control" value="1" min="1">
+            </div>
+            <div class="form-group" style="margin-bottom: 0; flex-grow: 1;">
+              <label>Ghi chú ghi chữ trên bánh:</label>
+              <input type="text" id="manual-item-note" class="form-control" placeholder="Yêu cầu viết chữ...">
+            </div>
+            <button type="button" class="btn btn-outline" onclick="addManualOrderItem()" style="padding: 12px 20px;">Thêm bánh</button>
+          </div>
+
+          <!-- Current Items List in manual order -->
+          <div class="card" style="margin-bottom: 32px; padding: 20px;">
+            <h4 style="margin-bottom: 12px;">Giỏ hàng đơn đặt thủ công</h4>
+            <div id="manual-items-list">
+              <div style="color: var(--gray-600); font-style: italic; font-size: 13px;">Chưa chọn bánh nào.</div>
+            </div>
+          </div>
+
+          <!-- Scheduling and payment settings -->
+          <h4 style="margin-bottom: 16px; color: var(--primary-hover); border-bottom: 1px dashed var(--gray-200); padding-bottom: 8px;">Thời gian và thanh toán</h4>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Ngày giao bánh:</label>
+              <input type="date" id="manual-customer-date" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label>Giờ giao bánh:</label>
+              <select id="manual-customer-time" class="form-control" required>
+                <option value="08:00 - 10:00">08:00 - 10:00</option>
+                <option value="10:00 - 12:00">10:00 - 12:00</option>
+                <option value="12:00 - 14:00">12:00 - 14:00</option>
+                <option value="14:00 - 16:00">14:00 - 16:00</option>
+                <option value="16:00 - 18:00">16:00 - 18:00</option>
+                <option value="18:00 - 20:00">18:00 - 20:00</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Phương thức thanh toán:</label>
+              <select id="manual-payment-method" class="form-control">
+                <option value="cod">Tiền mặt tại quầy / COD</option>
+                <option value="bank_transfer">Chuyển khoản VietQR</option>
+                <option value="e_wallet">Ví điện tử</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Trạng thái thanh toán:</label>
+              <select id="manual-payment-status" class="form-control">
+                <option value="unpaid">Chưa thanh toán (Unpaid)</option>
+                <option value="paid">Đã thanh toán xong (Paid)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Áp dụng mã giảm giá (Nếu có):</label>
+              <input type="text" id="manual-customer-coupon" class="form-control" placeholder="Mã giảm giá">
+            </div>
+            <div class="form-group">
+              <label>Ghi chú đơn hàng chung:</label>
+              <input type="text" id="manual-customer-note" class="form-control" placeholder="Nhân viên giao nhận lưu ý...">
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block" style="padding: 16px;">Tạo và xuất đơn hàng</button>
+        </form>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-bottom" style="padding-top: 0; border-top: none;">
+      <p>&copy; 2026 Sweet Pink Bakery & Tea Break. Tiệm Bánh Nhân Viên.</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/public/js/main.js"></script>
+  <script src="/public/js/staff-dashboard.js"></script>
+</body>
+</html>

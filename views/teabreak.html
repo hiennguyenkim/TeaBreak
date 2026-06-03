@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đặt Tiệc Tea Break - Sweet Pink Bakery & Tea Break</title>
+  <link rel="stylesheet" href="/public/css/style.css">
+  <style>
+    .teabreak-hero {
+      background: linear-gradient(135deg, #fff0f3 0%, #fff 100%);
+      padding: 60px 0;
+      text-align: center;
+      border-bottom: 1px solid var(--primary-light);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Header -->
+  <header>
+    <div class="container navbar">
+      <a href="/index.html" class="logo">
+        <span class="logo-icon">🍰</span> Sweet Pink Bakery & Tea Break
+      </a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="/index.html">Trang chủ</a></li>
+          <li><a href="/products.html">Sản phẩm bánh</a></li>
+          <li><a href="/teabreak.html" class="active">Đặt tiệc Tea Break</a></li>
+          <li><a href="/order-tracking.html">Theo dõi đơn</a></li>
+          <li><a href="/contact.html">Liên hệ</a></li>
+        </ul>
+      </nav>
+      <div class="nav-actions" id="nav-actions">
+        <!-- Loaded dynamically -->
+      </div>
+      <button class="mobile-nav-toggle">☰</button>
+    </div>
+  </header>
+
+  <!-- Banner details -->
+  <section class="teabreak-hero">
+    <div class="container">
+      <h2 style="font-size: 36px; color: var(--primary-hover); margin-bottom: 8px;">Dịch Vụ Tiệc Trà & Tea Break Trọn Gói</h2>
+      <p class="text-muted" style="max-width: 640px; margin: 0 auto;">Cung cấp dịch vụ tiệc ngọt hội nghị, khai trương, tiệc trà chiều doanh nghiệp với mini cake tinh tế, trà thơm thượng hạng và set-up chuyên nghiệp. Hãy điền yêu cầu của bạn, chúng tôi sẽ tư vấn và báo giá chi tiết trong vòng 2 giờ làm việc.</p>
+    </div>
+  </section>
+
+  <!-- Form main container -->
+  <main class="container" style="padding: 40px 0; max-width: 720px;">
+    <div class="card">
+      <h3 style="margin-bottom: 24px; border-bottom: 2px solid var(--primary-light); padding-bottom: 8px; color: var(--dark);">Thông tin yêu cầu đặt tiệc</h3>
+      
+      <form id="teabreak-form" onsubmit="submitTeaBreakRequest(event)">
+        <!-- Personal Contact Info -->
+        <h4 style="margin-bottom: 16px; color: var(--gray-600); font-size: 14px; text-transform: uppercase;">Thông tin người liên hệ</h4>
+        <div class="form-group">
+          <label for="tb-fullname">Họ và tên người đặt:</label>
+          <input type="text" id="tb-fullname" class="form-control" placeholder="Ví dụ: Nguyễn Văn A" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="tb-phone">Số điện thoại di động:</label>
+            <input type="tel" id="tb-phone" class="form-control" placeholder="Ví dụ: 09xxxxxxxx" required>
+          </div>
+          <div class="form-group">
+            <label for="tb-email">Địa chỉ Email:</label>
+            <input type="email" id="tb-email" class="form-control" placeholder="name@domain.com" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="tb-corporate">Tên công ty / doanh nghiệp (Nếu có):</label>
+          <input type="text" id="tb-corporate" class="form-control" placeholder="Ví dụ: Công ty TNHH Giải Pháp Công Nghệ ABC">
+        </div>
+
+        <!-- Tea Break Specifications -->
+        <h4 style="margin-top: 32px; margin-bottom: 16px; color: var(--gray-600); font-size: 14px; text-transform: uppercase;">Chi tiết dịch vụ yêu cầu</h4>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="tb-package">Loại set tiệc mong muốn:</label>
+            <select id="tb-package" class="form-control" required>
+              <option value="Set tiệc ngọt (Mini Cake ngọt ngào)">Set tiệc ngọt (Mini Cake ngọt ngào)</option>
+              <option value="Set tiệc mặn (Finger-sandwich & bánh mặn)">Set tiệc mặn (Finger-sandwich & bánh mặn)</option>
+              <option value="Set tiệc kết hợp (Ngọt & Mặn song hành)">Set tiệc kết hợp (Ngọt & Mặn song hành)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="tb-size">Quy mô khách tham dự:</label>
+            <select id="tb-size" class="form-control" required>
+              <option value="10-15 người">Dành cho 10-15 người</option>
+              <option value="20-30 người">Dành cho 20-30 người</option>
+              <option value="30-50 người">Dành cho 30-50 người</option>
+              <option value="50-100 người">Dành cho 50-100 người</option>
+              <option value="Trên 100 người">Trên 100 người (Liên hệ trực tiếp)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="tb-tea">Lựa chọn hương vị trà chính:</label>
+            <select id="tb-tea" class="form-control" required>
+              <option value="Trà Ô long cam đào">Trà Ô long cam đào (Dễ uống, thơm dịu)</option>
+              <option value="Trà Earl Grey Anh Quốc">Trà Earl Grey Anh Quốc (Đậm vị trà đen)</option>
+              <option value="Trà hoa cúc mật ong">Trà hoa cúc mật ong (Thanh tao, thư giãn)</option>
+              <option value="Trà hoa hồng tuyết">Trà hoa hồng tuyết (Ngọt ngào, sang trọng)</option>
+              <option value="Nước hoa quả tổng hợp">Nước hoa quả tổng hợp (Không chứa trà)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="tb-theme">Tông màu / Chủ đề trang trí sự kiện:</label>
+            <input type="text" id="tb-theme" class="form-control" placeholder="Ví dụ: Tông màu hồng pastel / Tông màu xanh dương thương hiệu..." required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="tb-date">Ngày tổ chức tiệc:</label>
+            <input type="date" id="tb-date" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="tb-time">Khung giờ giao hàng & Setup:</label>
+            <input type="text" id="tb-time" class="form-control" placeholder="Ví dụ: 09:00 - 10:30 hoặc 14:00" required>
+          </div>
+        </div>
+
+        <!-- Image file upload input -->
+        <div class="form-group">
+          <label for="tb-layout">Sơ đồ bố trí mặt bằng hoặc hình ảnh mẫu tiệc trà tham khảo:</label>
+          <input type="file" id="tb-layout" class="form-control" accept="image/*" required>
+          <small class="text-muted" style="display: block; margin-top: 4px;">Chấp nhận file ảnh (.jpeg, .png, .webp). Dung lượng tối đa 5MB.</small>
+        </div>
+
+        <div class="form-group">
+          <label for="tb-note">Yêu cầu bổ sung đặc biệt (Ví dụ: Thêm bánh chay, giảm đường, setup hoa tươi):</label>
+          <textarea id="tb-note" class="form-control" rows="4" placeholder="Nhập các yêu cầu cụ thể khác về thực đơn, cách set-up hoặc thiết bị đi kèm..."></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" style="margin-top: 24px; padding: 14px;">Gửi yêu cầu dịch vụ Tea Break</button>
+      </form>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-bottom" style="padding-top: 0; border-top: none;">
+      <p>&copy; 2026 Sweet Pink Bakery & Tea Break. Tiệm bánh ngọt & Tiệc trà chiều.</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/public/js/main.js"></script>
+  <script>
+    // Set Tomorrow limits on date inputs
+    document.addEventListener('DOMContentLoaded', () => {
+      const dateInput = document.getElementById('tb-date');
+      if (!dateInput) return;
+
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      
+      const year = tomorrow.getFullYear();
+      let month = tomorrow.getMonth() + 1;
+      let day = tomorrow.getDate();
+
+      if (month < 10) month = `0${month}`;
+      if (day < 10) day = `0${day}`;
+
+      dateInput.min = `${year}-${month}-${day}`;
+      dateInput.value = `${year}-${month}-${day}`;
+
+      // Pre-fill user contact info if logged in
+      fetchAPI('/api/auth/me', { silent: true }).then(data => {
+        if (data.success && data.user) {
+          document.getElementById('tb-fullname').value = data.user.name || '';
+          document.getElementById('tb-phone').value = data.user.phone || '';
+          document.getElementById('tb-email').value = data.user.email || '';
+        }
+      }).catch(() => {});
+    });
+
+    // Form submit teabreak request
+    const submitTeaBreakRequest = async (e) => {
+      e.preventDefault();
+
+      const fileInput = document.getElementById('tb-layout');
+      if (fileInput.files.length === 0) {
+        showToast('Vui lòng tải lên sơ đồ bố trí hoặc ảnh mẫu tiệc trà tham khảo', 'warning');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('fullname', document.getElementById('tb-fullname').value.trim());
+      formData.append('phone', document.getElementById('tb-phone').value.trim());
+      formData.append('email', document.getElementById('tb-email').value.trim());
+      formData.append('corporateName', document.getElementById('tb-corporate').value.trim());
+      formData.append('packageType', document.getElementById('tb-package').value);
+      formData.append('groupSize', document.getElementById('tb-size').value);
+      formData.append('teaOption', document.getElementById('tb-tea').value);
+      formData.append('eventTheme', document.getElementById('tb-theme').value.trim());
+      formData.append('expectedDate', document.getElementById('tb-date').value);
+      formData.append('expectedTime', document.getElementById('tb-time').value.trim());
+      formData.append('note', document.getElementById('tb-note').value.trim());
+      formData.append('sampleLayout', fileInput.files[0]);
+
+      try {
+        const data = await fetchAPI('/api/teabreak-requests', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (data.success) {
+          showToast(data.message, 'success');
+          document.getElementById('teabreak-form').reset();
+          
+          setTimeout(() => {
+            // Redirect to user dashboard requests list
+            window.location.href = '/user-dashboard.html';
+          }, 2000);
+        }
+      } catch (err) {
+        if (err.message.includes('đăng nhập')) {
+          showToast('Vui lòng đăng nhập tài khoản khách hàng để gửi yêu cầu đặt tiệc trà', 'warning');
+          setTimeout(() => {
+            window.location.href = '/login.html';
+          }, 1500);
+        } else {
+          showToast(err.message || 'Có lỗi xảy ra khi gửi yêu cầu', 'danger');
+        }
+      }
+    };
+  </script>
+</body>
+</html>
