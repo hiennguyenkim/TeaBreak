@@ -3,90 +3,161 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Đăng Ký Tài Khoản - Sweet Pink Bakery & Tea Break</title>
+  <meta name="description" content="Đăng ký tài khoản Sweet Pink Bakery & Tea Break để mua sắm, nhận mã giảm giá và theo dõi đơn hàng.">
+  <title>Đăng Ký Tài Khoản — Sweet Pink Bakery & Tea Break</title>
   <link rel="stylesheet" href="/public/css/style.css">
   <link rel="stylesheet" href="/public/css/auth.css">
 </head>
 <body>
 
-  <!-- Navigation Header -->
-  <header>
-    <div class="container navbar">
-      <a href="/index.html" class="logo">
-        <span class="logo-icon">🍰</span> Sweet Pink Bakery & Tea Break
-      </a>
-      <nav>
-        <ul class="nav-links">
-          <li><a href="/index.html">Trang chủ</a></li>
-          <li><a href="/products.html">Sản phẩm bánh</a></li>
-          <li><a href="/teabreak.html">Đặt tiệc Tea Break</a></li>
-          <li><a href="/order-tracking.html">Theo dõi đơn</a></li>
-          <li><a href="/contact.html">Liên hệ</a></li>
-        </ul>
-      </nav>
-      <div class="nav-actions" id="nav-actions">
-        <a href="/login.html" class="btn btn-secondary" style="padding: 8px 16px; font-size: 14px;">Đăng nhập</a>
+  <!-- Split-screen Auth Layout -->
+  <div class="auth-page">
+
+    <!-- Left Panel — Branding -->
+    <aside class="auth-panel-left" aria-hidden="true">
+      <div class="auth-brand">
+        <div class="auth-brand-icon">🎂</div>
+        <h2 class="auth-brand-name">Gia nhập<br><em>Sweet Pink</em> Family</h2>
+        <p class="auth-brand-tagline">Đăng ký tài khoản để trải nghiệm đặt bánh cá nhân hóa, nhận ưu đãi độc quyền và theo dõi mọi đơn hàng.</p>
+        <div class="auth-brand-perks">
+          <div class="auth-perk">
+            <span class="auth-perk-icon">🎁</span>
+            <span>Tặng voucher 50K cho đơn đầu tiên</span>
+          </div>
+          <div class="auth-perk">
+            <span class="auth-perk-icon">📦</span>
+            <span>Theo dõi đơn hàng real-time</span>
+          </div>
+          <div class="auth-perk">
+            <span class="auth-perk-icon">💌</span>
+            <span>Nhận ưu đãi sinh nhật đặc biệt</span>
+          </div>
+        </div>
       </div>
-      <button class="mobile-nav-toggle">☰</button>
-    </div>
-  </header>
+    </aside>
 
-  <!-- Register Form Wrapper -->
-  <div class="auth-wrapper" style="max-width: 540px;">
-    <div class="auth-card">
-      <div class="auth-header">
-        <h2>Đăng Ký Tài Khoản</h2>
-        <p>Đăng ký để mua sắm, nhận mã giảm giá và theo dõi đơn đặt bánh</p>
+    <!-- Right Panel — Register Form -->
+    <main class="auth-panel-right">
+      <div class="auth-form-container" style="max-width: 500px;">
+        <!-- Back to home -->
+        <a href="/index.html" class="auth-back-link">← Về trang chủ</a>
+
+        <div class="auth-header">
+          <h1>Tạo tài khoản mới 🎉</h1>
+          <p>Đăng ký miễn phí để mua sắm, nhận mã giảm giá và theo dõi đơn bánh</p>
+        </div>
+
+        <form id="register-form" class="auth-form" novalidate>
+          <div class="form-group">
+            <label for="register-name">Họ và tên</label>
+            <div class="input-group">
+              <span class="input-icon">👤</span>
+              <input type="text" id="register-name" class="form-control" placeholder="Nguyễn Văn A" autocomplete="name" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="register-email">Địa chỉ Email</label>
+              <div class="input-group">
+                <span class="input-icon">📧</span>
+                <input type="email" id="register-email" class="form-control" placeholder="name@domain.com" autocomplete="email" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="register-phone">Số điện thoại</label>
+              <div class="input-group">
+                <span class="input-icon">📞</span>
+                <input type="tel" id="register-phone" class="form-control" placeholder="09xxxxxxxx" autocomplete="tel" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="register-password">Mật khẩu</label>
+              <div class="input-group">
+                <span class="input-icon">🔒</span>
+                <input type="password" id="register-password" class="form-control" placeholder="Tối thiểu 6 ký tự" minlength="6" autocomplete="new-password" required>
+                <button type="button" class="input-toggle-pw" id="toggle-pw1" aria-label="Hiện/ẩn mật khẩu">👁️</button>
+              </div>
+              <div class="pw-strength">
+                <div class="pw-strength-bar" id="pw-strength-bar"></div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="register-confirm-password">Xác nhận mật khẩu</label>
+              <div class="input-group">
+                <span class="input-icon">🔒</span>
+                <input type="password" id="register-confirm-password" class="form-control" placeholder="Nhập lại mật khẩu" autocomplete="new-password" required>
+                <button type="button" class="input-toggle-pw" id="toggle-pw2" aria-label="Hiện/ẩn mật khẩu">👁️</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="register-address">Địa chỉ giao hàng mặc định</label>
+            <div class="input-group">
+              <span class="input-icon">📍</span>
+              <input type="text" id="register-address" class="form-control" placeholder="Số nhà, tên đường, phường, quận..." style="padding-left: 44px;" autocomplete="street-address" required>
+            </div>
+          </div>
+
+          <div class="check-row" style="margin-bottom: 20px;">
+            <input type="checkbox" id="agree-terms" required>
+            <label for="agree-terms">Tôi đồng ý với <a href="#">điều khoản dịch vụ</a> và <a href="#">chính sách bảo mật</a></label>
+          </div>
+
+          <button type="submit" class="btn btn-primary auth-submit-btn" id="register-submit-btn">
+            Tạo tài khoản miễn phí
+          </button>
+        </form>
+
+        <div class="auth-switch">
+          Đã có tài khoản? <a href="/login.html">Đăng nhập ngay</a>
+        </div>
       </div>
-
-      <form id="register-form">
-        <div class="form-group">
-          <label for="register-name">Họ và tên của bạn:</label>
-          <input type="text" id="register-name" class="form-control" placeholder="Nguyen Van A" required>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="register-email">Địa chỉ Email:</label>
-            <input type="email" id="register-email" class="form-control" placeholder="name@domain.com" required>
-          </div>
-          <div class="form-group">
-            <label for="register-phone">Số điện thoại liên hệ:</label>
-            <input type="tel" id="register-phone" class="form-control" placeholder="09xxxxxxxx" required>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="register-password">Mật khẩu:</label>
-            <input type="password" id="register-password" class="form-control" placeholder="Tối thiểu 6 ký tự" minlength="6" required>
-          </div>
-          <div class="form-group">
-            <label for="register-confirm-password">Xác nhận mật khẩu:</label>
-            <input type="password" id="register-confirm-password" class="form-control" placeholder="Nhập lại mật khẩu" required>
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="register-address">Địa chỉ nhà giao hàng mặc định:</label>
-          <input type="text" id="register-address" class="form-control" placeholder="Số nhà, tên đường, phường, quận..." required>
-        </div>
-
-        <button type="submit" class="btn btn-primary btn-block" style="margin-top: 12px;">Đăng ký tài khoản</button>
-      </form>
-
-      <div class="auth-footer">
-        Đã có tài khoản khách hàng? <a href="/login.html">Đăng nhập</a>
-      </div>
-    </div>
+    </main>
   </div>
 
-  <!-- Footer -->
-  <footer>
-    <div class="container footer-bottom" style="padding-top: 0; border-top: none;">
-      <p>&copy; 2026 Sweet Pink Bakery & Tea Break. Tiệm bánh ngọt mini & Tiệc Tea Break.</p>
-    </div>
-  </footer>
+  <!-- Toast container -->
+  <div id="toast-container" role="alert" aria-live="polite"></div>
 
   <!-- Scripts -->
   <script src="/public/js/main.js"></script>
+  <script>
+    // Toggle password visibility (both fields)
+    [['toggle-pw1', 'register-password'], ['toggle-pw2', 'register-confirm-password']].forEach(([btnId, inputId]) => {
+      const btn = document.getElementById(btnId);
+      const input = document.getElementById(inputId);
+      if (btn && input) {
+        btn.addEventListener('click', () => {
+          const visible = input.type === 'text';
+          input.type = visible ? 'password' : 'text';
+          btn.textContent = visible ? '👁️' : '🙈';
+        });
+      }
+    });
+
+    // Password strength indicator
+    const pwInput = document.getElementById('register-password');
+    const pwBar   = document.getElementById('pw-strength-bar');
+    if (pwInput && pwBar) {
+      pwInput.addEventListener('input', () => {
+        const val = pwInput.value;
+        pwBar.className = 'pw-strength-bar';
+        if (val.length === 0) return;
+        if (val.length < 6) { pwBar.classList.add('weak'); return; }
+        const hasUpper = /[A-Z]/.test(val);
+        const hasNum   = /[0-9]/.test(val);
+        const hasSpec  = /[^A-Za-z0-9]/.test(val);
+        const score = [val.length >= 8, hasUpper, hasNum, hasSpec].filter(Boolean).length;
+        if (score <= 1) pwBar.classList.add('weak');
+        else if (score <= 3) pwBar.classList.add('medium');
+        else pwBar.classList.add('strong');
+      });
+    }
+  </script>
   <script src="/public/js/auth.js"></script>
 </body>
 </html>

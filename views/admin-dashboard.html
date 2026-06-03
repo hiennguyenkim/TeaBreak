@@ -264,10 +264,28 @@
           </div>
         </div>
 
-        <!-- Subtab 2: Contacts & Inquiries -->
+        <!-- Subtab 2: Contacts & Inquiries (Messenger Style) -->
         <div id="subtab-contacts-content" style="display: none;">
-          <div id="contacts-tickets-list">
-            <!-- Loaded dynamically -->
+          <div class="chat-layout">
+            <!-- Left side contact tickets list -->
+            <div class="chat-users-list" id="contacts-users-list">
+              <!-- Loaded dynamically -->
+            </div>
+            <!-- Right side contact conversation window -->
+            <div class="chat-window">
+              <div class="chat-header">Yêu cầu: <span id="contacts-header-name" style="color: var(--primary-hover); font-weight: 700;">Vui lòng chọn yêu cầu</span></div>
+              <div id="contacts-user-details" style="padding: 12px 16px; font-size: 13px; background: white; border-bottom: 1px solid var(--gray-200); display: none; line-height: 1.5; color: var(--gray-600);">
+                <!-- Filled dynamically with details -->
+              </div>
+              <div class="chat-messages" id="contacts-chat-messages">
+                <div style="text-align: center; color: var(--gray-600); margin: auto;">Chọn một yêu cầu liên hệ ở cột bên trái để xem nội dung và phản hồi.</div>
+              </div>
+              <div class="chat-input-area" id="contacts-input-area" style="display: none;">
+                <input type="text" id="contacts-reply-input" class="form-control" placeholder="Nhập phản hồi gửi khách hàng...">
+                <button class="btn btn-primary" id="contacts-send-btn" style="white-space: nowrap;">Gửi & Đóng</button>
+                <button class="btn btn-secondary" id="contacts-save-btn" style="white-space: nowrap;">Lưu tạm</button>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -336,6 +354,12 @@
               <label for="setting-opening-hours">Giờ hoạt động / Mở cửa:</label>
               <input type="text" id="setting-opening-hours" class="form-control" placeholder="Mở cửa từ 07:30 - 21:00..." required>
             </div>
+          </div>
+
+          <h4 style="margin-top: 24px; margin-bottom: 16px; color: var(--primary-hover);">Bản đồ Google Maps</h4>
+          <div class="form-group">
+            <label for="setting-map-embed">Mã nhúng Bản đồ (Iframe HTML từ Google Maps):</label>
+            <textarea id="setting-map-embed" class="form-control" placeholder="Dán mã nhúng iframe từ Google Maps vào đây..." style="height: 120px;" required></textarea>
           </div>
           
           <button type="submit" class="btn btn-primary" style="margin-top: 16px;">Lưu toàn bộ cài đặt</button>

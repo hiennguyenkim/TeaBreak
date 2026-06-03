@@ -3,107 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sweet Pink Bakery & Tea Break - Tiệm Bánh Ngọt Ngào</title>
+  <meta name="description" content="Sweet Pink Bakery & Tea Break — Tiệm bánh ngọt mini cake tinh tế, tea break packages trọn gói và dịch vụ đặt tiệc trà chiều văn phòng chuyên nghiệp tại TP. Hồ Chí Minh.">
+  <title>Sweet Pink Bakery & Tea Break — Tiệm Bánh Ngọt Ngào & Tiệc Trà Chiều</title>
   <link rel="stylesheet" href="/public/css/style.css">
   <link rel="stylesheet" href="/public/css/product.css">
-  <style>
-    /* Home Specific Styles */
-    .hero-banner {
-      background: linear-gradient(135deg, #fff0f3 0%, #fff 100%);
-      padding: 100px 0;
-      border-bottom: 1px solid var(--primary-light);
-      position: relative;
-      overflow: hidden;
-    }
-    .hero-banner::after {
-      content: '🍰';
-      position: absolute;
-      bottom: -20px;
-      right: 10%;
-      font-size: 160px;
-      opacity: 0.05;
-      transform: rotate(-15deg);
-    }
-    .hero-grid {
-      display: grid;
-      grid-template-columns: 1.2fr 1fr;
-      align-items: center;
-      gap: 48px;
-    }
-    .hero-text h1 {
-      font-size: 54px;
-      color: var(--primary-hover);
-      margin-bottom: 24px;
-      line-height: 1.1;
-    }
-    .hero-text p {
-      font-size: 18px;
-      color: var(--gray-600);
-      margin-bottom: 32px;
-      max-width: 540px;
-    }
-    .hero-img {
-      position: relative;
-      animation: float 6s ease-in-out infinite;
-    }
-    .hero-img img {
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-lg);
-      border: 4px solid #ffffff;
-      width: 100%;
-    }
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
-    .section-title {
-      font-size: 32px;
-      text-align: center;
-      margin-bottom: 48px;
-      color: var(--dark);
-      position: relative;
-    }
-    .section-title::after {
-      content: '';
-      position: absolute;
-      bottom: -10px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 60px;
-      height: 4px;
-      background-color: var(--primary);
-      border-radius: 2px;
-    }
-    .value-cards {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 32px;
-      margin: 64px 0;
-    }
-    .value-card {
-      background-color: var(--light);
-      border-radius: var(--radius-lg);
-      padding: 32px;
-      text-align: center;
-      box-shadow: var(--shadow-sm);
-      border: 1px solid var(--primary-light);
-    }
-    .value-icon {
-      font-size: 36px;
-      margin-bottom: 16px;
-    }
-  </style>
+  <link rel="stylesheet" href="/public/css/home.css">
 </head>
 <body>
 
+  <!-- Announcement Banner -->
+  <div class="announcement-bar" id="announcement-bar">
+    <span>🎂 Miễn phí giao hàng nội thành cho đơn từ 500.000đ — Đặt ngay hôm nay!</span>
+    <button class="announcement-close" onclick="this.parentElement.style.display='none'" aria-label="Đóng">×</button>
+  </div>
+
   <!-- Top Navigation Header -->
-  <header>
+  <header id="main-header">
     <div class="container navbar">
-      <a href="/index.html" class="logo">
-        <span class="logo-icon">🍰</span> Sweet Pink Bakery & Tea Break
+      <a href="/index.html" class="logo" aria-label="Sweet Pink Bakery & Tea Break - Trang chủ">
+        <span class="logo-icon" aria-hidden="true">🍰</span>
+        <span><span class="logo-text-main">Sweet Pink</span> Bakery</span>
       </a>
-      <nav>
-        <ul class="nav-links">
+      <nav aria-label="Menu chính">
+        <ul class="nav-links" id="nav-links">
           <li><a href="/index.html" class="active">Trang chủ</a></li>
           <li><a href="/products.html">Sản phẩm bánh</a></li>
           <li><a href="/teabreak.html">Đặt tiệc Tea Break</a></li>
@@ -113,76 +35,305 @@
       </nav>
       <div class="nav-actions" id="nav-actions">
         <!-- Auth status loaded dynamically via main.js -->
-        <a href="/login.html" class="btn btn-secondary" style="padding: 8px 16px; font-size: 14px;">Đăng nhập</a>
+        <a href="/login.html" class="btn btn-primary btn-sm" id="nav-login-btn">Đăng nhập</a>
       </div>
-      <button class="mobile-nav-toggle">☰</button>
+      <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Mở menu di động" aria-expanded="false">☰</button>
     </div>
   </header>
 
-  <!-- Hero Banner -->
-  <section class="hero-banner">
+  <!-- ======================== HERO SECTION ======================== -->
+  <section class="hero-section" aria-label="Hero banner chính">
+    <!-- Decorative blobs -->
+    <div class="hero-blob hero-blob-1" aria-hidden="true"></div>
+    <div class="hero-blob hero-blob-2" aria-hidden="true"></div>
+    <div class="hero-blob hero-blob-3" aria-hidden="true"></div>
+
     <div class="container hero-grid">
-      <div class="hero-text">
-        <h1>Tiệc Trà Chiều & Bánh Ngọt Trọn Gói - Sweet Pink</h1>
-        <p>Cung cấp mini cake tinh tế, tea break packages trọn gói và dịch vụ đặt tiệc trà chiều văn phòng, corporate event chuyên nghiệp.</p>
-        <div style="display: flex; gap: 16px;">
-          <a href="/products.html" class="btn btn-primary">Đặt bánh ngay</a>
-          <a href="/teabreak.html" class="btn btn-outline">Đặt tiệc Tea Break</a>
+      <!-- Hero Text -->
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span>✨</span> Tiệm bánh cao cấp số 1 TP.HCM
+        </div>
+        <h1 class="hero-title">
+          Tiệc Trà Chiều &<br>
+          <em class="hero-title-accent">Bánh Ngọt</em><br>
+          Trọn Gói
+        </h1>
+        <p class="hero-desc">
+          Mini cake tinh tế, tea break packages sang trọng và dịch vụ đặt tiệc trà chiều văn phòng, corporate event chuyên nghiệp — được làm từ nguyên liệu thượng hạng.
+        </p>
+        <div class="hero-actions">
+          <a href="/products.html" class="btn btn-primary btn-lg" id="hero-cta-products">
+            🛍️ Đặt bánh ngay
+          </a>
+          <a href="/teabreak.html" class="btn btn-outline btn-lg" id="hero-cta-teabreak">
+            ☕ Đặt tiệc Tea Break
+          </a>
+        </div>
+        <!-- Trust badges -->
+        <div class="hero-trust">
+          <div class="trust-item">
+            <span class="trust-icon">⭐</span>
+            <div>
+              <strong>4.9/5</strong>
+              <span>Đánh giá</span>
+            </div>
+          </div>
+          <div class="trust-sep"></div>
+          <div class="trust-item">
+            <span class="trust-icon">🎂</span>
+            <div>
+              <strong>2.000+</strong>
+              <span>Đơn thành công</span>
+            </div>
+          </div>
+          <div class="trust-sep"></div>
+          <div class="trust-item">
+            <span class="trust-icon">🚀</span>
+            <div>
+              <strong>2 giờ</strong>
+              <span>Giao hàng nhanh</span>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="hero-img">
-        <!-- Main aesthetic bakery hero graphic -->
-        <img src="/public/img/hero-cake.jpg" alt="Sweet Pink Bakery & Tea Break Hero Cake" onerror="this.src='https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600'">
+
+      <!-- Hero Image -->
+      <div class="hero-visual">
+        <div class="hero-img-wrapper">
+          <img
+            src="/public/img/hero-cake.jpg"
+            alt="Sweet Pink Bakery — Bánh sinh nhật tinh tế"
+            class="hero-img"
+            id="hero-main-img"
+            onerror="this.src='https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=700&q=80'"
+          >
+          <!-- Floating cards on image -->
+          <div class="hero-float-card hero-float-top" aria-hidden="true">
+            <span class="float-emoji">🎂</span>
+            <div>
+              <strong>Mini Cake</strong>
+              <span>Từ 180.000đ</span>
+            </div>
+          </div>
+          <div class="hero-float-card hero-float-bottom" aria-hidden="true">
+            <span class="float-emoji">☕</span>
+            <div>
+              <strong>Tea Break</strong>
+              <span>Trọn gói</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="hero-scroll-hint" aria-hidden="true">
+      <div class="scroll-mouse">
+        <div class="scroll-wheel"></div>
       </div>
     </div>
   </section>
 
-  <!-- Core Bakery Values -->
-  <section class="container" style="padding: 80px 0 40px;">
-    <h2 class="section-title">Tại sao chọn Sweet Pink Bakery & Tea Break</h2>
-    <div class="value-cards">
-      <div class="value-card">
-        <div class="value-icon">🎂</div>
-        <h3>Bánh tươi mỗi ngày</h3>
-        <p style="color: var(--gray-600); margin-top: 8px; font-size: 14px;">Bánh chỉ được sản xuất khi có đơn đặt hàng, đảm bảo độ tươi xốp tinh tế của cốt bánh và độ béo ngậy thanh mát của kem bơ Pháp.</p>
-      </div>
-      <div class="value-card">
-        <div class="value-icon">🍓</div>
-        <h3>Nguyên liệu thượng hạng</h3>
-        <p style="color: var(--gray-600); margin-top: 8px; font-size: 14px;">Tuyển chọn dâu tây tươi Đà Lạt, phô mai Mascarpone nhập khẩu Ý và sô cô la Bỉ để tạo nên hương vị nguyên bản thơm ngon nhất.</p>
-      </div>
-      <div class="value-card">
-        <div class="value-icon">🚀</div>
-        <h3>Giao hàng đúng hẹn</h3>
-        <p style="color: var(--gray-600); margin-top: 8px; font-size: 14px;">Hộp bảo quản lạnh chuyên nghiệp và đội ngũ shipper giao bánh nhẹ nhàng, cam kết giao bánh nguyên vẹn đúng khung giờ vàng.</p>
+  <!-- ======================== CATEGORY STRIPS ======================== -->
+  <section class="category-strip-section" aria-label="Danh mục sản phẩm">
+    <div class="container">
+      <div class="category-strips" id="category-strips">
+        <a href="/products.html?category=mini-cake" class="cat-strip" id="cat-mini-cake">
+          <img src="/public/img/cat-birthday.jpg" alt="Mini Cake" onerror="this.src='https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=400&q=70'">
+          <div class="cat-strip-overlay">
+            <span class="cat-strip-label">🎂 Mini Cake</span>
+          </div>
+        </a>
+        <a href="/products.html?category=cupcake" class="cat-strip" id="cat-cupcake">
+          <img src="/public/img/cat-cupcake.jpg" alt="Cupcake" onerror="this.src='https://images.unsplash.com/photo-1486427944299-d1955d23e34d?w=400&q=70'">
+          <div class="cat-strip-overlay">
+            <span class="cat-strip-label">🧁 Cupcake</span>
+          </div>
+        </a>
+        <a href="/products.html?category=tiramisu" class="cat-strip" id="cat-tiramisu">
+          <img src="/public/img/cat-tiramisu.jpg" alt="Tiramisu" onerror="this.src='https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=400&q=70'">
+          <div class="cat-strip-overlay">
+            <span class="cat-strip-label">☕ Tiramisu</span>
+          </div>
+        </a>
+        <a href="/products.html?category=mousse" class="cat-strip" id="cat-mousse">
+          <img src="/public/img/cat-mousse.jpg" alt="Mousse Cake" onerror="this.src='https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400&q=70'">
+          <div class="cat-strip-overlay">
+            <span class="cat-strip-label">🍓 Mousse</span>
+          </div>
+        </a>
+        <a href="/teabreak.html" class="cat-strip cat-strip-wide" id="cat-teabreak">
+          <img src="/public/img/cat-birthday.jpg" alt="Tea Break Package" onerror="this.src='https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=600&q=70'">
+          <div class="cat-strip-overlay">
+            <span class="cat-strip-label">☕ Tea Break Packages</span>
+            <span class="cat-strip-sub">Trọn gói văn phòng</span>
+          </div>
+        </a>
       </div>
     </div>
   </section>
 
-  <!-- Featured Products Display -->
-  <section class="container" style="padding: 40px 0 80px;">
-    <h2 class="section-title">Bộ Sưu Tập Bánh Nổi Bật</h2>
-    <div class="grid-4" id="home-featured-grid">
-      <!-- Loaded dynamically via javascript -->
-      <div style="grid-column: 1/-1; text-align: center; color: var(--gray-600);">Đang tải sản phẩm nổi bật...</div>
-    </div>
-    <div class="text-center" style="margin-top: 48px;">
-      <a href="/products.html" class="btn btn-outline">Xem tất cả bánh ngọt</a>
+  <!-- ======================== VALUE PROPOSITIONS ======================== -->
+  <section class="values-section animate-on-scroll" aria-label="Lý do chọn Sweet Pink">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">✦ Cam kết của chúng tôi</span>
+        <h2 class="section-title">Tại sao chọn Sweet Pink Bakery?</h2>
+        <p class="section-subtitle">Mỗi chiếc bánh là một tác phẩm nghệ thuật được làm từ tình yêu và nguyên liệu thượng hạng</p>
+      </div>
+      <div class="value-grid">
+        <div class="value-card animate-on-scroll" id="value-fresh">
+          <div class="value-icon-wrap">
+            <div class="value-icon-bg"></div>
+            <span class="value-icon" aria-hidden="true">🎂</span>
+          </div>
+          <h3>Bánh tươi mỗi ngày</h3>
+          <p>Bánh chỉ được sản xuất khi có đơn đặt hàng, đảm bảo độ tươi xốp tinh tế của cốt bánh và độ béo ngậy thanh mát của kem bơ Pháp.</p>
+          <a href="/products.html" class="value-link">Xem thực đơn →</a>
+        </div>
+        <div class="value-card animate-on-scroll" id="value-premium" style="--delay: 0.15s">
+          <div class="value-icon-wrap">
+            <div class="value-icon-bg" style="--icon-color: hsl(35,85%,60%)"></div>
+            <span class="value-icon" aria-hidden="true">🍓</span>
+          </div>
+          <h3>Nguyên liệu thượng hạng</h3>
+          <p>Tuyển chọn dâu tây tươi Đà Lạt, phô mai Mascarpone nhập khẩu Ý và sô cô la Bỉ để tạo nên hương vị nguyên bản thơm ngon nhất.</p>
+          <a href="/products.html" class="value-link">Khám phá bánh →</a>
+        </div>
+        <div class="value-card animate-on-scroll" id="value-delivery" style="--delay: 0.3s">
+          <div class="value-icon-wrap">
+            <div class="value-icon-bg" style="--icon-color: hsl(158,64%,45%)"></div>
+            <span class="value-icon" aria-hidden="true">🚀</span>
+          </div>
+          <h3>Giao hàng đúng hẹn</h3>
+          <p>Hộp bảo quản lạnh chuyên nghiệp và đội ngũ shipper giao bánh nhẹ nhàng, cam kết giao bánh nguyên vẹn đúng khung giờ vàng.</p>
+          <a href="/contact.html" class="value-link">Liên hệ đặt hàng →</a>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- Footer -->
+  <!-- ======================== FEATURED PRODUCTS ======================== -->
+  <section class="featured-section" aria-label="Sản phẩm nổi bật">
+    <div class="container">
+      <div class="section-header animate-on-scroll">
+        <span class="section-badge">🍰 Best Sellers</span>
+        <h2 class="section-title">Bộ Sưu Tập Bánh Nổi Bật</h2>
+        <p class="section-subtitle">Những chiếc bánh được yêu thích nhất — tinh tế, thơm ngon và đẹp mắt</p>
+      </div>
+      <div class="grid-4" id="home-featured-grid">
+        <!-- Skeleton placeholders while loading -->
+        <div class="product-card product-skeleton" aria-hidden="true"></div>
+        <div class="product-card product-skeleton" aria-hidden="true"></div>
+        <div class="product-card product-skeleton" aria-hidden="true"></div>
+        <div class="product-card product-skeleton" aria-hidden="true"></div>
+      </div>
+      <div class="text-center" style="margin-top: 52px;">
+        <a href="/products.html" class="btn btn-outline btn-lg" id="see-all-products">
+          Xem tất cả bánh ngọt &rarr;
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================== TEA BREAK PROMO ======================== -->
+  <section class="promo-banner-section animate-on-scroll" aria-label="Đặt tiệc Tea Break">
+    <div class="container">
+      <div class="promo-banner" id="teabreak-promo">
+        <div class="promo-deco" aria-hidden="true">☕</div>
+        <div class="promo-content">
+          <span class="promo-eyebrow">Corporate & Events</span>
+          <h2 class="promo-title">Tiệc Tea Break Trọn Gói cho Văn Phòng</h2>
+          <p class="promo-desc">Dịch vụ đặt tiệc tea break chuyên nghiệp — bánh, trà, setup đẹp. Phù hợp cho hội nghị, khai trương, sinh nhật công ty. Tư vấn miễn phí!</p>
+          <div class="promo-actions">
+            <a href="/teabreak.html" class="btn btn-primary" id="promo-teabreak-btn">☕ Đặt tiệc ngay</a>
+            <a href="/contact.html" class="btn btn-ghost" id="promo-contact-btn">Liên hệ tư vấn</a>
+          </div>
+        </div>
+        <div class="promo-stats">
+          <div class="promo-stat">
+            <strong>500+</strong>
+            <span>Sự kiện đã tổ chức</span>
+          </div>
+          <div class="promo-stat">
+            <strong>50+</strong>
+            <span>Đối tác doanh nghiệp</span>
+          </div>
+          <div class="promo-stat">
+            <strong>100%</strong>
+            <span>Khách hàng hài lòng</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================== TESTIMONIALS ======================== -->
+  <section class="testimonials-section animate-on-scroll" aria-label="Đánh giá khách hàng">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">💬 Khách hàng nói gì</span>
+        <h2 class="section-title">Cảm Nhận Từ Khách Hàng</h2>
+      </div>
+      <div class="testimonials-grid">
+        <div class="testimonial-card animate-on-scroll" id="testimonial-1">
+          <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+          <blockquote class="testimonial-text">
+            "Bánh kem dâu tây tươi ngon tuyệt vời! Cốt bánh mềm xốp, kem bơ thơm béo ngậy. Giao hàng đúng giờ, box đẹp. Chắc chắn sẽ đặt lại!"
+          </blockquote>
+          <div class="testimonial-author">
+            <div class="author-avatar">NL</div>
+            <div>
+              <strong>Nguyễn Lan Anh</strong>
+              <span>Khách hàng thân thiết</span>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card animate-on-scroll" id="testimonial-2" style="--delay: 0.15s">
+          <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+          <blockquote class="testimonial-text">
+            "Đặt tea break cho văn phòng 30 người — setup rất đẹp, bánh ngon, nhân viên nhiệt tình. Sếp và đồng nghiệp đều khen nức nở!"
+          </blockquote>
+          <div class="testimonial-author">
+            <div class="author-avatar" style="background: var(--accent);">PH</div>
+            <div>
+              <strong>Phạm Hữu Đức</strong>
+              <span>Manager — Tech Company</span>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card animate-on-scroll" id="testimonial-3" style="--delay: 0.3s">
+          <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+          <blockquote class="testimonial-text">
+            "Tiramisu ở đây ngon nhất Sài Gòn! Lớp kem mascarpone mịn màng, cà phê đậm đà, bánh ngấm vừa đủ. Nghiện thật sự rồi 🍰"
+          </blockquote>
+          <div class="testimonial-author">
+            <div class="author-avatar" style="background: var(--success);">TM</div>
+            <div>
+              <strong>Trần Minh Thu</strong>
+              <span>Food Blogger</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================== FOOTER ======================== -->
   <footer>
     <div class="container footer-grid">
       <div class="footer-col">
-        <a href="/index.html" class="logo" style="margin-bottom: 16px;">
-          <span class="logo-icon">🍰</span> Sweet Pink Bakery & Tea Break
+        <a href="/index.html" class="logo">
+          <span class="logo-icon">🍰</span>
+          <span><span class="logo-text-main">Sweet Pink</span> Bakery</span>
         </a>
-        <p>Cung cấp dịch vụ tiệc ngọt hội nghị, khai trương, tiệc trà chiều doanh nghiệp và các dòng mini cake tinh tế hàng đầu.</p>
+        <p>Cung cấp dịch vụ tiệc ngọt hội nghị, khai trương, tiệc trà chiều doanh nghiệp và các dòng mini cake tinh tế hàng đầu tại TP. Hồ Chí Minh.</p>
         <div class="social-links">
-          <a href="#" class="social-icon">🔵</a>
-          <a href="#" class="social-icon">📸</a>
-          <a href="#" class="social-icon">🔴</a>
+          <a href="#" class="social-icon" aria-label="Facebook" title="Facebook">🔵</a>
+          <a href="#" class="social-icon" aria-label="Instagram" title="Instagram">📸</a>
+          <a href="#" class="social-icon" aria-label="TikTok" title="TikTok">🎵</a>
+          <a href="#" class="social-icon" aria-label="YouTube" title="YouTube">🔴</a>
         </div>
       </div>
       <div class="footer-col">
@@ -191,6 +342,7 @@
           <li><a href="/index.html">Trang chủ</a></li>
           <li><a href="/products.html">Sản phẩm bánh</a></li>
           <li><a href="/teabreak.html">Đặt tiệc Tea Break</a></li>
+          <li><a href="/order-tracking.html">Theo dõi đơn hàng</a></li>
           <li><a href="/contact.html">Liên hệ tư vấn</a></li>
         </ul>
       </div>
@@ -200,25 +352,74 @@
           <li><a href="/teabreak.html">Corporate Orders</a></li>
           <li><a href="/teabreak.html">Tea Break Packages</a></li>
           <li><a href="/products.html?category=mini-cake">Mini Cake nhỏ xinh</a></li>
+          <li><a href="/products.html?category=tiramisu">Tiramisu cao cấp</a></li>
           <li><a href="#">Điều khoản dịch vụ</a></li>
         </ul>
       </div>
       <div class="footer-col">
         <h3>Liên hệ</h3>
-        <p>📍 123 Đường Hồng, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh</p>
-        <p>📞 Hotline: 0988.888.888</p>
-        <p>📧 Email: support@sweetpinkbakery.vn</p>
+        <div class="footer-contact-item">
+          <span class="footer-contact-icon">📍</span>
+          <span>123 Đường Hồng, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh</span>
+        </div>
+        <div class="footer-contact-item">
+          <span class="footer-contact-icon">📞</span>
+          <span>Hotline: <a href="tel:0988888888" style="color:inherit;">0988.888.888</a></span>
+        </div>
+        <div class="footer-contact-item">
+          <span class="footer-contact-icon">📧</span>
+          <span><a href="mailto:support@sweetpinkbakery.vn" style="color:inherit;">support@sweetpinkbakery.vn</a></span>
+        </div>
+        <div class="footer-contact-item">
+          <span class="footer-contact-icon">🕐</span>
+          <span>Thứ 2 – Chủ nhật: 7:00 – 20:00</span>
+        </div>
       </div>
     </div>
     <div class="footer-bottom">
-      <p>&copy; 2026 Sweet Pink Bakery & Tea Break. All rights reserved. Tiệm bánh ngọt & tiệc trà chiều.</p>
+      <p>&copy; 2026 Sweet Pink Bakery & Tea Break. All rights reserved. — Tiệm bánh ngọt & tiệc trà chiều.</p>
     </div>
   </footer>
+
+  <!-- Toast container -->
+  <div id="toast-container" role="alert" aria-live="polite"></div>
 
   <!-- Scripts -->
   <script src="/public/js/main.js"></script>
   <script>
-    // Load featured products on home page load
+    // ---- Sticky header scroll effect ----
+    const header = document.getElementById('main-header');
+    window.addEventListener('scroll', () => {
+      header.classList.toggle('scrolled', window.scrollY > 40);
+    }, { passive: true });
+
+    // ---- Mobile nav toggle ----
+    const mobileToggle = document.getElementById('mobile-nav-toggle');
+    const navLinks = document.getElementById('nav-links');
+    if (mobileToggle && navLinks) {
+      mobileToggle.addEventListener('click', () => {
+        const open = navLinks.classList.toggle('mobile-open');
+        mobileToggle.textContent = open ? '✕' : '☰';
+        mobileToggle.setAttribute('aria-expanded', open.toString());
+      });
+    }
+
+    // ---- Scroll-triggered animations ----
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const delay = entry.target.style.getPropertyValue('--delay') || '0s';
+          setTimeout(() => {
+            entry.target.classList.add('is-visible');
+          }, parseFloat(delay) * 1000);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+
+    // ---- Load featured products ----
     document.addEventListener('DOMContentLoaded', async () => {
       const grid = document.getElementById('home-featured-grid');
       if (!grid) return;
@@ -228,15 +429,17 @@
         if (data.success && data.products.length > 0) {
           grid.innerHTML = data.products.map(product => {
             const price = product.discountPrice || product.price;
+            const oldPrice = product.oldPrice ? `<span class="old-price">${product.oldPrice.toLocaleString('vi-VN')}đ</span>` : '';
             const discountBadge = product.oldPrice ? `<span class="product-badge badge-sale">GIẢM GIÁ</span>` : '';
             const image = product.images[0] || '/public/img/placeholder.jpg';
 
             return `
               <div class="product-card">
                 ${discountBadge}
-                <button class="product-fav-btn" onclick="toggleFavorite('${product._id}')" title="Thêm vào yêu thích">❤️</button>
-                <a href="/product-detail.html?slug=${product.slug}" class="product-img-wrapper">
-                  <img src="${image}" alt="${product.name}">
+                <button class="product-fav-btn" onclick="toggleFavorite('${product._id}')" title="Thêm vào yêu thích" aria-label="Thêm ${product.name} vào yêu thích">♡</button>
+                <a href="/product-detail.html?slug=${product.slug}" class="product-img-wrapper" tabindex="-1" aria-hidden="true">
+                  <img src="${image}" alt="${product.name}" loading="lazy">
+                  <div class="product-img-overlay"><span>Xem chi tiết</span></div>
                 </a>
                 <div class="product-info">
                   <div class="product-category">${product.categoryId?.name || 'Bánh Ngọt'}</div>
@@ -244,29 +447,34 @@
                     <h3 class="product-title">${product.name}</h3>
                   </a>
                   <div class="product-rating">
-                    ⭐ ${product.ratingAverage || '5.0'}
+                    <span class="stars">⭐</span>
+                    <span>${product.ratingAverage || '5.0'}</span>
+                    <span class="product-rating-count">(${product.reviewCount || '0'})</span>
                   </div>
                   <div class="product-price-row">
                     <div class="price-box">
                       <span class="current-price">${price.toLocaleString('vi-VN')}đ</span>
+                      ${oldPrice}
                     </div>
-                    <button class="card-add-btn" onclick="quickAddCart('${product._id}', '${product.size[0] || 'Standard'}', '${product.flavor[0] || 'Vani'}')">🛒</button>
+                    <button class="card-add-btn" onclick="quickAddCart('${product._id}', '${product.size?.[0] || 'Standard'}', '${product.flavor?.[0] || 'Vani'}')" aria-label="Thêm ${product.name} vào giỏ hàng">
+                      🛒
+                    </button>
                   </div>
                 </div>
               </div>
             `;
           }).join('');
         } else {
-          grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--gray-600);">Hiện tại chưa có bánh nổi bật.</div>';
+          grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 48px; color: var(--gray-500);">Hiện tại chưa có bánh nổi bật.</div>';
         }
       } catch (e) {
-        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--danger);">Không thể nạp danh sách bánh nổi bật.</div>';
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 48px; color: var(--danger);">Không thể tải danh sách bánh. Vui lòng thử lại sau.</div>';
       }
     });
 
-    // Wishlist helper
+    // ---- Wishlist helper ----
     const toggleFavorite = (id) => {
-      showToast('Đã thêm sản phẩm vào danh sách yêu thích!', 'success');
+      showToast('Đã thêm sản phẩm vào danh sách yêu thích! 💕', 'success');
       let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
       if (!wishlist.includes(id)) {
         wishlist.push(id);
@@ -274,7 +482,7 @@
       }
     };
 
-    // Quick Add helper
+    // ---- Quick Add helper ----
     const quickAddCart = async (productId, size, flavor) => {
       try {
         const data = await fetchAPI('/api/cart', {
@@ -282,15 +490,13 @@
           body: JSON.stringify({ productId, quantity: 1, size, flavor, note: '' }),
         });
         if (data.success) {
-          showToast('Đã thêm bánh vào giỏ hàng thành công!', 'success');
+          showToast('Đã thêm bánh vào giỏ hàng! 🛒', 'success');
           updateCartBadge();
         }
       } catch (err) {
-        if (err.message.includes('đăng nhập')) {
-          showToast('Vui lòng đăng nhập tài khoản khách hàng để mua sắm', 'warning');
-          setTimeout(() => {
-            window.location.href = '/login.html';
-          }, 1500);
+        if (err.message && err.message.includes('đăng nhập')) {
+          showToast('Vui lòng đăng nhập để mua sắm 😊', 'warning');
+          setTimeout(() => { window.location.href = '/login.html'; }, 1500);
         }
       }
     };

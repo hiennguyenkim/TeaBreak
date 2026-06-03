@@ -979,6 +979,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('setting-phone').value = settings.phone || '';
         document.getElementById('setting-email').value = settings.email || '';
         document.getElementById('setting-opening-hours').value = settings.openingHours || '';
+        document.getElementById('setting-map-embed').value = settings.mapEmbed || '';
       }
     } catch (e) {
       showToast('Không thể tải cấu hình cài đặt.', 'danger');
@@ -1001,6 +1002,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         formData.append('phone', document.getElementById('setting-phone').value);
         formData.append('email', document.getElementById('setting-email').value);
         formData.append('openingHours', document.getElementById('setting-opening-hours').value);
+        formData.append('mapEmbed', document.getElementById('setting-map-embed').value);
 
         const logoFileInput = document.getElementById('setting-logo-file');
         if (logoFileInput && logoFileInput.files[0]) {
@@ -1165,93 +1167,165 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  // ================= TAB: CONTACTS & FEEDBACK TICKETS (MESSENGER STYLE) =================
+  let activeContactId = '';
+  let contactTicketsList = [];
+
   const loadContactTickets = async () => {
-    const listEl = document.getElementById('contacts-tickets-list');
+    const listEl = document.getElementById('contacts-users-list');
     if (!listEl) return;
 
-    listEl.innerHTML = '<div class="text-center">Đang tải ý kiến khách hàng...</div>';
+    listEl.innerHTML = '<div style="padding: 10px; color: var(--gray-600);">Đang tải yêu cầu...</div>';
 
     try {
       const data = await fetchAPI('/api/contacts');
       if (data.success) {
-        renderContacts(data.contacts);
+        contactTicketsList = data.contacts;
+        renderContactsList();
       }
     } catch (e) {
-      listEl.innerHTML = '<div class="text-center" style="color: var(--danger);">Không thể tải dữ liệu liên hệ.</div>';
+      listEl.innerHTML = '<div style="color: var(--danger); padding: 10px;">Lỗi tải dữ liệu.</div>';
     }
   };
 
-  const renderContacts = (contacts) => {
-    const listEl = document.getElementById('contacts-tickets-list');
-    if (contacts.length === 0) {
-      listEl.innerHTML = '<div class="text-center" style="padding: 24px; color: var(--gray-600);">Chưa nhận được phản hồi liên hệ nào.</div>';
+  const renderContactsList = () => {
+    const listEl = document.getElementById('contacts-users-list');
+    if (!listEl) return;
+
+    if (contactTicketsList.length === 0) {
+      listEl.innerHTML = '<div style="font-size: 13px; text-align: center; color: var(--gray-600); padding: 12px;">Chưa nhận được yêu cầu nào.</div>';
       return;
     }
 
-    listEl.innerHTML = contacts.map(c => {
-      const date = new Date(c.createdAt).toLocaleDateString('vi-VN');
-      
-      let replyFormHTML = '';
-      if (c.status === 'new' || c.status === 'processing') {
-        replyFormHTML = `
-          <div style="margin-top: 12px; border-top: 1px dashed var(--gray-200); padding-top: 12px;">
-            <div class="form-group">
-              <label style="font-size: 12px;">Trả lời khách hàng:</label>
-              <textarea id="contact-reply-${c._id}" class="form-control" style="min-height: 80px; font-size: 13px;" placeholder="Nhập câu trả lời giải đáp thắc mắc...">${c.staffReply || ''}</textarea>
-            </div>
-            <div style="display: flex; gap: 8px;">
-              <button class="btn btn-primary" style="padding: 8px 16px; font-size: 12px;" onclick="sendContactReply('${c._id}', 'done')">Gửi và hoàn thành</button>
-              <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 12px;" onclick="sendContactReply('${c._id}', 'processing')">Lưu tạm</button>
-            </div>
-          </div>
-        `;
-      } else {
-        replyFormHTML = `
-          <div style="margin-top: 12px; background-color: var(--gray-100); border-radius: var(--radius-sm); padding: 12px; font-size: 13px;">
-            <strong>Nội dung phản hồi từ tiệm:</strong>
-            <div>${c.staffReply}</div>
-          </div>
-        `;
+    listEl.innerHTML = contactTicketsList.map(c => {
+      const activeClass = c._id === activeContactId ? 'active' : '';
+      let statusBadge = '';
+      if (c.status === 'new') {
+        statusBadge = `<span class="badge" style="position: relative; display: inline-flex; margin-left: 8px; background: var(--primary); font-size: 9px; padding: 2px 5px; color: white;">NEW</span>`;
+      } else if (c.status === 'processing') {
+        statusBadge = `<span class="badge" style="position: relative; display: inline-flex; margin-left: 8px; background: #f59e0b; font-size: 9px; padding: 2px 5px; color: white;">PND</span>`;
       }
 
       return `
-        <div class="order-history-card" style="margin-bottom: 16px;">
-          <div style="display: flex; justify-content: space-between;">
-            <strong>Chủ đề: ${c.subject}</strong>
-            <span class="oh-status ${c.status}">${c.status.toUpperCase()}</span>
-          </div>
-          <div style="font-size: 13px; color: var(--gray-600); margin: 6px 0;">
-            Người gửi: <strong>${c.name}</strong> (${c.email} | SĐT: ${c.phone}) - Ngày gửi: ${date}
-            ${c.orderCode ? `<br>Mã đơn liên quan: <strong>#${c.orderCode}</strong>` : ''}
-          </div>
-          <div style="font-size: 14px; background-color: var(--secondary); padding: 12px; border-radius: var(--radius-sm); margin: 10px 0;">
-            ${c.content}
-          </div>
-          ${replyFormHTML}
+        <div class="chat-user-item ${activeClass}" onclick="openContactTicket('${c._id}')">
+          <div class="chat-user-name">${c.name} ${statusBadge}</div>
+          <div class="chat-user-last">${c.subject}</div>
         </div>
       `;
     }).join('');
+
+    // If there is an active selected ticket, keep it open/refresh it
+    if (activeContactId) {
+      const activeTicket = contactTicketsList.find(x => x._id === activeContactId);
+      if (activeTicket) {
+        showContactTicketDetails(activeTicket);
+      }
+    }
   };
 
-  window.sendContactReply = async (contactId, status) => {
-    const replyText = document.getElementById(`contact-reply-${contactId}`).value.trim();
+  window.openContactTicket = (id) => {
+    activeContactId = id;
+    
+    // Refresh active class in list
+    const items = document.querySelectorAll('#contacts-users-list .chat-user-item');
+    contactTicketsList.forEach((c, idx) => {
+      if (items[idx]) {
+        items[idx].classList.toggle('active', c._id === id);
+      }
+    });
+
+    const activeTicket = contactTicketsList.find(x => x._id === id);
+    if (activeTicket) {
+      showContactTicketDetails(activeTicket);
+    }
+  };
+
+  const showContactTicketDetails = (ticket) => {
+    const detailsPanel = document.getElementById('contacts-user-details');
+    const headerName = document.getElementById('contacts-header-name');
+    const messagesBox = document.getElementById('contacts-chat-messages');
+    const inputArea = document.getElementById('contacts-input-area');
+    const replyInput = document.getElementById('contacts-reply-input');
+
+    if (!detailsPanel || !headerName || !messagesBox || !inputArea || !replyInput) return;
+
+    headerName.textContent = ticket.name;
+    
+    let orderHtml = ticket.orderCode ? ` | Mã đơn liên quan: <strong>#${ticket.orderCode}</strong>` : '';
+    detailsPanel.innerHTML = `
+      SĐT: <strong>${ticket.phone}</strong> | Email: <strong>${ticket.email}</strong><br>
+      Chủ đề: <strong>${ticket.subject}</strong>${orderHtml} | Trạng thái: <strong>${ticket.status.toUpperCase()}</strong>
+    `;
+    detailsPanel.style.display = 'block';
+
+    const dateStr = new Date(ticket.createdAt).toLocaleString('vi-VN');
+    
+    let chatHtml = `
+      <div class="chat-msg received">
+        <div style="font-size: 11px; color: var(--gray-500); margin-bottom: 4px;">Khách hàng gửi - ${dateStr}</div>
+        <div>${ticket.content}</div>
+      </div>
+    `;
+
+    if (ticket.staffReply) {
+      chatHtml += `
+        <div class="chat-msg sent">
+          <div style="font-size: 11px; color: rgba(255, 255, 255, 0.7); margin-bottom: 4px;">Phản hồi từ tiệm</div>
+          <div>${ticket.staffReply}</div>
+        </div>
+      `;
+    }
+
+    messagesBox.innerHTML = chatHtml;
+    messagesBox.scrollTop = messagesBox.scrollHeight;
+
+    if (ticket.status === 'done') {
+      inputArea.style.display = 'none';
+    } else {
+      inputArea.style.display = 'flex';
+      replyInput.value = ticket.staffReply || '';
+    }
+  };
+
+  const initContactActions = () => {
+    const sendBtn = document.getElementById('contacts-send-btn');
+    const saveBtn = document.getElementById('contacts-save-btn');
+    const replyInput = document.getElementById('contacts-reply-input');
+
+    if (sendBtn) {
+      sendBtn.onclick = () => submitContactReply('done');
+    }
+    if (saveBtn) {
+      saveBtn.onclick = () => submitContactReply('processing');
+    }
+  };
+
+  const submitContactReply = async (status) => {
+    if (!activeContactId) return;
+
+    const replyInput = document.getElementById('contacts-reply-input');
+    const replyText = replyInput ? replyInput.value.trim() : '';
+
     if (!replyText) {
-      showToast('Vui lòng điền câu trả lời khách hàng trước khi lưu', 'warning');
+      showToast('Vui lòng nhập nội dung phản hồi trước khi gửi', 'warning');
       return;
     }
 
     try {
-      const data = await fetchAPI(`/api/contacts/${contactId}`, {
+      const data = await fetchAPI(`/api/contacts/${activeContactId}`, {
         method: 'PUT',
         body: JSON.stringify({ staffReply: replyText, status }),
       });
       if (data.success) {
         showToast(data.message, 'success');
-        loadContactTickets();
+        
+        // Reload all and keep same active contact ticket selected
+        await loadContactTickets();
       }
     } catch (e) {}
   };
 
   // Initial load
+  initContactActions();
   switchTab('tab-stats');
 });

@@ -373,6 +373,22 @@ const syncNavbarAuth = async () => {
         } catch (e) {}
       });
 
+      // Toggle user menu dropdown on click
+      const userMenu = navActions.querySelector('.user-menu');
+      if (userMenu) {
+        const trigger = userMenu.querySelector('button');
+        trigger.addEventListener('click', (e) => {
+          e.stopPropagation();
+          userMenu.classList.toggle('active');
+        });
+        
+        document.addEventListener('click', (e) => {
+          if (!userMenu.contains(e.target)) {
+            userMenu.classList.remove('active');
+          }
+        });
+      }
+
       // Update cart count
       updateCartBadge();
 
@@ -477,6 +493,12 @@ const loadGlobalSettings = async () => {
             <p>&copy; ${new Date().getFullYear()} ${settings.logoText || 'Sweet Pink Bakery & Tea Break'}. All rights reserved.</p>
           </div>
         `;
+      }
+
+      // Update contact map if container exists
+      const contactMap = document.getElementById('contact-map');
+      if (contactMap && settings.mapEmbed) {
+        contactMap.innerHTML = settings.mapEmbed;
       }
     }
   } catch (err) {

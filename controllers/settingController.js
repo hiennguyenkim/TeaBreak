@@ -43,6 +43,7 @@ exports.updateSettings = async (req, res) => {
       'phone',
       'email',
       'openingHours',
+      'mapEmbed',
     ];
 
     fields.forEach((field) => {
