@@ -12,8 +12,8 @@ const checkValidationResult = (req, res, next) => {
   next();
 };
 
-// Phone regex rule: starting with 0, 84, or +84, followed by 3, 5, 7, 8, or 9, followed by 8 digits
-const phoneRegex = /^(0|84|\+84)(3|5|7|8|9)[0-9]{8}$/;
+// Phone regex rule: starting with 0, total length 9 or 11 characters
+const phoneRegex = /^0\d{8}$|^0\d{10}$/;
 
 // Validation rules for Register
 exports.validateRegister = [
@@ -28,7 +28,7 @@ exports.validateRegister = [
   body('phone')
     .trim()
     .matches(phoneRegex)
-    .withMessage('Số điện thoại không đúng định dạng Việt Nam (ví dụ: 0988888888, gồm 10 chữ số)'),
+    .withMessage('Số điện thoại bắt đầu bằng số 0, tổng độ dài 9 hoặc 11 ký tự (ví dụ: 0988888888)'),
   body('password')
     .isLength({ min: 6 })
     .withMessage('Mật khẩu phải chứa ít nhất 6 ký tự'),
@@ -77,7 +77,7 @@ exports.validateProfileUpdate = [
     .optional()
     .trim()
     .matches(phoneRegex)
-    .withMessage('Số điện thoại không đúng định dạng Việt Nam (gồm 10 chữ số)'),
+    .withMessage('Số điện thoại bắt đầu bằng số 0, tổng độ dài 9 hoặc 11 ký tự'),
   checkValidationResult
 ];
 
@@ -94,7 +94,7 @@ exports.validateAdminCreateUser = [
   body('phone')
     .trim()
     .matches(phoneRegex)
-    .withMessage('Số điện thoại không đúng định dạng Việt Nam (gồm 10 chữ số)'),
+    .withMessage('Số điện thoại bắt đầu bằng số 0, tổng độ dài 9 hoặc 11 ký tự'),
   body('password')
     .isLength({ min: 6 })
     .withMessage('Mật khẩu khởi tạo phải chứa ít nhất 6 ký tự'),
@@ -117,10 +117,68 @@ exports.validateAdminUpdateUser = [
     .optional()
     .trim()
     .matches(phoneRegex)
-    .withMessage('Số điện thoại không đúng định dạng Việt Nam (gồm 10 chữ số)'),
+    .withMessage('Số điện thoại bắt đầu bằng số 0, tổng độ dài 9 hoặc 11 ký tự'),
   body('password')
     .optional()
     .isLength({ min: 6 })
     .withMessage('Mật khẩu mới phải chứa ít nhất 6 ký tự'),
+  checkValidationResult
+];
+
+// Validation rules for Delivery Address
+exports.validateAddress = [
+  body('receiverName')
+    .trim()
+    .notEmpty()
+    .withMessage('Vui lòng cung cấp tên người nhận'),
+  body('phone')
+    .trim()
+    .matches(phoneRegex)
+    .withMessage('Số điện thoại bắt đầu bằng số 0, tổng độ dài 9 hoặc 11 ký tự'),
+  body('addressDetail')
+    .trim()
+    .notEmpty()
+    .withMessage('Vui lòng cung cấp địa chỉ chi tiết (số nhà, tên đường)'),
+  body('ward')
+    .trim()
+    .notEmpty()
+    .withMessage('Vui lòng cung cấp Phường/Xã'),
+  body('district')
+    .trim()
+    .notEmpty()
+    .withMessage('Vui lòng cung cấp Quận/Huyện'),
+  body('city')
+    .trim()
+    .notEmpty()
+    .withMessage('Vui lòng cung cấp Tỉnh/Thành phố'),
+  checkValidationResult
+];
+
+// Validation rules for Placing Order
+exports.validateOrder = [
+  body('fullname')
+    .trim()
+    .notEmpty()
+    .withMessage('Vui lòng cung cấp họ tên người nhận'),
+  body('phone')
+    .trim()
+    .matches(phoneRegex)
+    .withMessage('Số điện thoại bắt đầu bằng số 0, tổng độ dài 9 hoặc 11 ký tự'),
+  body('email')
+    .trim()
+    .isEmail()
+    .withMessage('Vui lòng cung cấp email liên hệ hợp lệ'),
+  body('address')
+    .trim()
+    .notEmpty()
+    .withMessage('Vui lòng cung cấp địa chỉ nhận hàng'),
+  checkValidationResult
+];
+
+// Validation rules for Product price checks
+exports.validateProduct = [
+  body('price')
+    .isInt({ min: 0 })
+    .withMessage('Giá tiền phải là số nguyên dương'),
   checkValidationResult
 ];

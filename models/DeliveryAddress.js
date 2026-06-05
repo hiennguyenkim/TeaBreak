@@ -16,6 +16,10 @@ const deliveryAddressSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Vui lòng cung cấp số điện thoại người nhận'],
       trim: true,
+      match: [
+        /^0\d{8}$|^0\d{10}$/,
+        'Số điện thoại bắt đầu bằng số 0, tổng độ dài 9 hoặc 11 ký tự',
+      ],
     },
     addressDetail: {
       type: String,

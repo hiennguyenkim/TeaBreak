@@ -129,12 +129,64 @@ document.addEventListener('DOMContentLoaded', () => {
       paginationEl.innerHTML = buttons;
     };
 
+    // Debounce helper
+    const debounce = (func, delay) => {
+      let timer;
+      return function (...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => func.apply(this, args), delay);
+      };
+    };
+
+    const debouncedLoadProducts = debounce(loadProducts, 300);
+
     // Global handles for pagination / catalog triggers
     window.changePage = (page) => {
       currentPage = page;
       loadProducts();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     };
+
+    // Category checkboxes mutual exclusivity and URL sync
+    const categoryCheckboxes = document.querySelectorAll('input[name="category"]');
+    categoryCheckboxes.forEach(cb => {
+      // Sync initial state from currentCategory variable
+      if (cb.value === currentCategory) {
+        cb.checked = true;
+      } else if (cb.value !== "" && currentCategory === "") {
+        cb.checked = false;
+      }
+
+      cb.addEventListener('click', (e) => {
+        // Uncheck all other category checkboxes
+        categoryCheckboxes.forEach(other => {
+          if (other !== cb) {
+            other.checked = false;
+          }
+        });
+
+        // Ensure at least one checked, default back to "" (All)
+        if (!cb.checked) {
+          const allBox = Array.from(categoryCheckboxes).find(box => box.value === "");
+          if (allBox) allBox.checked = true;
+          currentCategory = "";
+        } else {
+          currentCategory = cb.value;
+        }
+
+        // Push URL state
+        const newUrl = new URL(window.location);
+        if (currentCategory) {
+          newUrl.searchParams.set('category', currentCategory);
+        } else {
+          newUrl.searchParams.delete('category');
+        }
+        history.pushState({}, '', newUrl);
+
+        currentPage = 1;
+        debouncedLoadProducts();
+      });
+    });
 
     // Listen to filter submit / updates
     if (catalogFiltersForm) {
@@ -143,10 +195,12 @@ document.addEventListener('DOMContentLoaded', () => {
         currentPage = 1;
         loadProducts();
       });
-      // Filter checkbox triggers
-      catalogFiltersForm.addEventListener('change', () => {
+
+      // Filter checkbox/select triggers (excluding category handled above)
+      catalogFiltersForm.addEventListener('change', (e) => {
+        if (e.target.name === 'category') return;
         currentPage = 1;
-        loadProducts();
+        debouncedLoadProducts();
       });
     }
 
@@ -207,7 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
               ${thumbsHTML}
             </div>
           </div>
-
+ 
           <!-- Description Column -->
           <div class="details-panel">
             <div class="product-category">${product.categoryId?.name || 'Bánh Ngọt'}</div>
@@ -220,14 +274,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 ${product.stock > 0 && product.status !== 'out_of_stock' ? 'Còn hàng' : 'Hết hàng'}
               </span>
             </div>
-
+ 
             <div class="detail-price-box">
               <span class="detail-price">${price.toLocaleString('vi-VN')}đ</span>
               ${product.oldPrice ? `<span class="detail-old-price">${product.oldPrice.toLocaleString('vi-VN')}đ</span>` : ''}
             </div>
-
+ 
             <p class="detail-desc">${product.description}</p>
-
+ 
             <!-- Size Selection -->
             <div class="variation-group">
               <h4>Kích thước bánh:</h4>
@@ -235,7 +289,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 ${sizesHTML}
               </div>
             </div>
-
+ 
             <!-- Flavor Selection -->
             <div class="variation-group">
               <h4>Hương vị:</h4>
@@ -243,13 +297,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 ${flavorsHTML}
               </div>
             </div>
-
+ 
             <!-- Custom Lettering note -->
             <div class="form-group" style="margin-top: 24px;">
               <label for="detail-note">Ghi chú viết chữ hoặc yêu cầu đặc biệt (Tùy chọn):</label>
               <input type="text" id="detail-note" class="form-control" placeholder="Ví dụ: Viết chữ HPBD, yêu cầu đóng hộp quà hoặc ghi chú set-up tiệc">
             </div>
-
+ 
             <!-- Add to Cart area -->
             <div style="margin-top: 32px;">
               <div class="add-action-area">
@@ -267,7 +321,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 `}
               </div>
             </div>
-
+ 
             <!-- Specifications Table -->
             <table class="specs-table">
               ${product.ingredients ? `<tr><td>Thành phần chính:</td><td>${product.ingredients}</td></tr>` : ''}
@@ -409,11 +463,22 @@ const quickAddCart = async (productId, size, flavor) => {
 
 // Wishlist favorite handler
 const toggleFavorite = async (productId) => {
-  showToast('Đã thêm sản phẩm vào danh sách yêu thích cá nhân!', 'success');
-  // Local storage fake wishlist representation for guests
-  let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
-  if (!wishlist.includes(productId)) {
-    wishlist.push(productId);
-    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+  try {
+    const data = await fetchAPI('/api/users/wishlist', {
+      method: 'POST',
+      body: JSON.stringify({ productId })
+    });
+    if (data.success) {
+      showToast('Đã thêm bánh vào danh sách yêu thích thành công!', 'success');
+    }
+  } catch (err) {
+    if (err.message.includes('đăng nhập') || err.message.includes('token') || err.message.includes('Chưa đăng nhập')) {
+      showToast('Vui lòng đăng nhập tài khoản khách hàng để sử dụng danh sách yêu thích', 'warning');
+      setTimeout(() => {
+        window.location.href = '/login.html';
+      }, 1500);
+    } else {
+      showToast(err.message, 'danger');
+    }
   }
 };

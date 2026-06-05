@@ -215,6 +215,14 @@
       <section class="dashboard-tab-panel" id="tab-manual">
         <h3 class="tab-title">Tạo đơn đặt hàng trực tiếp</h3>
         <form id="manual-order-form">
+          <!-- Autocomplete search -->
+          <div class="form-group" style="position: relative; margin-bottom: 20px;">
+            <label for="customer-search-manual">Tìm kiếm khách hàng thành viên (tên hoặc SĐT):</label>
+            <input type="text" id="customer-search-manual" class="form-control" placeholder="Nhập tên hoặc số điện thoại để tìm..." autocomplete="off">
+            <div id="customer-search-results" class="autocomplete-dropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--primary-light); border-radius: var(--radius-sm); z-index: 1000; max-height: 200px; overflow-y: auto; box-shadow: var(--shadow-md);">
+              <!-- Autocomplete items -->
+            </div>
+          </div>
           <!-- Customer info -->
           <div class="form-row">
             <div class="form-group">
@@ -274,14 +282,7 @@
             </div>
             <div class="form-group">
               <label>Giờ giao bánh:</label>
-              <select id="manual-customer-time" class="form-control" required>
-                <option value="08:00 - 10:00">08:00 - 10:00</option>
-                <option value="10:00 - 12:00">10:00 - 12:00</option>
-                <option value="12:00 - 14:00">12:00 - 14:00</option>
-                <option value="14:00 - 16:00">14:00 - 16:00</option>
-                <option value="16:00 - 18:00">16:00 - 18:00</option>
-                <option value="18:00 - 20:00">18:00 - 20:00</option>
-              </select>
+              <input type="time" id="manual-customer-time" class="form-control" required>
             </div>
           </div>
           <div class="form-row">
@@ -325,6 +326,38 @@
       <p>&copy; 2026 Sweet Pink Bakery & Tea Break. Tiệm Bánh Nhân Viên.</p>
     </div>
   </footer>
+
+  <!-- Order Details Modal -->
+  <div id="staff-order-details-modal" class="admin-modal">
+    <div class="modal-content-card" style="max-width: 600px;">
+      <div class="modal-header-row">
+        <h3>Chi tiết đơn hàng <span id="sd-order-code"></span></h3>
+        <button class="modal-close-btn" onclick="closeStaffOrderDetailModal()">&times;</button>
+      </div>
+      <div class="modal-body" style="font-size: 14px; line-height: 1.6;">
+        <p><strong>Khách hàng:</strong> <span id="sd-customer-name"></span></p>
+        <p><strong>Số điện thoại:</strong> <span id="sd-customer-phone"></span></p>
+        <p><strong>Email:</strong> <span id="sd-customer-email"></span></p>
+        <p><strong>Địa chỉ nhận bánh:</strong> <span id="sd-customer-address"></span></p>
+        <p><strong>Ngày nhận:</strong> <span id="sd-delivery-date"></span> lúc <span id="sd-delivery-time"></span></p>
+        <p><strong>Lời ghi chú:</strong> <span id="sd-order-note"></span></p>
+        <p><strong>Phương thức thanh toán:</strong> <span id="sd-payment-method"></span> | Trạng thái: <span id="sd-payment-status"></span></p>
+        
+        <h4 style="margin-top: 20px; margin-bottom: 8px; color: var(--primary-hover); border-bottom: 1px dashed var(--gray-200); padding-bottom: 4px;">Danh sách sản phẩm bánh</h4>
+        <div id="sd-order-items" style="background-color: var(--gray-100); padding: 12px; border-radius: var(--radius-sm); margin-bottom: 16px; display: flex; flex-direction: column; gap: 6px;">
+          <!-- Loaded dynamically -->
+        </div>
+
+        <h4 style="margin-top: 20px; margin-bottom: 8px; color: var(--primary-hover); border-bottom: 1px dashed var(--gray-200); padding-bottom: 4px;">Lịch sử thay đổi trạng thái</h4>
+        <div id="sd-order-history" style="max-height: 120px; overflow-y: auto; font-size: 12px; display: flex; flex-direction: column; gap: 4px;">
+          <!-- History dynamic list -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="closeStaffOrderDetailModal()">Đóng</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Scripts -->
   <script src="/public/js/main.js"></script>

@@ -201,6 +201,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
       const note = document.getElementById('checkout-note').value.trim();
 
+      const phoneInput = document.getElementById('checkout-phone');
+      hideFieldError(phoneInput);
+      const phoneRegex = /^0\d{8}$|^0\d{10}$/;
+      if (phone && !phoneRegex.test(phone)) {
+        showFieldError(phoneInput, 'Số điện thoại bắt đầu bằng số 0, gồm 9 hoặc 11 chữ số');
+        return;
+      }
+
       if (!fullname || !phone || !email || !address || !deliveryDate || !deliveryTime) {
         showToast('Vui lòng điền đầy đủ các thông tin giao hàng', 'warning');
         return;

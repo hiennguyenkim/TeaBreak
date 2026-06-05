@@ -1,15 +1,14 @@
 const multer = require('multer');
 
-// File filter (Only allow images)
 const imageFilter = (req, file, cb) => {
-  const allowedTypes = /jpeg|jpg|png|webp/;
+  const allowedTypes = /jpeg|jpg|png|webp|svg/;
   const extname = allowedTypes.test(file.originalname.toLowerCase());
-  const mimetype = allowedTypes.test(file.mimetype);
+  const mimetype = allowedTypes.test(file.mimetype) || file.mimetype === 'image/svg+xml';
 
   if (extname && mimetype) {
     return cb(null, true);
   } else {
-    cb(new Error('Chỉ chấp nhận các định dạng tệp ảnh (.jpeg, .jpg, .png, .webp)'), false);
+    cb(new Error('Chỉ chấp nhận các định dạng tệp ảnh (.jpeg, .jpg, .png, .webp, .svg)'), false);
   }
 };
 

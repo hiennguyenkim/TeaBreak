@@ -83,16 +83,16 @@
   <script>
     // Clear entire cart trigger handler
     const clearWholeCart = async () => {
-      if (!confirm('Bạn có thực sự muốn xóa toàn bộ sản phẩm trong giỏ hàng không?')) return;
-
-      try {
-        const data = await fetchAPI('/api/cart', { method: 'DELETE' });
-        if (data.success) {
-          showToast(data.message, 'success');
-          // Reload page
-          window.location.reload();
-        }
-      } catch (err) {}
+      showConfirmModal('Bạn có thực sự muốn xóa toàn bộ sản phẩm trong giỏ hàng không?', async () => {
+        try {
+          const data = await fetchAPI('/api/cart', { method: 'DELETE' });
+          if (data.success) {
+            showToast(data.message, 'success');
+            // Reload page
+            window.location.reload();
+          }
+        } catch (err) {}
+      });
     };
   </script>
 </body>

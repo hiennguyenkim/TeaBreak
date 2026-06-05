@@ -59,7 +59,7 @@
       
       <!-- Panel 1: Stats & Bestsellers -->
       <section class="dashboard-tab-panel active" id="tab-stats">
-        <h3 class="tab-title">Thống kê nhanh hệ thống</h3>
+        <h3 class="tab-title">Tổng quan hệ thống</h3>
         <div class="stats-grid">
           <div class="stat-card">
             <h3>Tổng số sản phẩm</h3>
@@ -96,10 +96,16 @@
         <div class="analytics-chart-container card" style="margin-bottom: 40px; padding: 24px;">
           <div class="chart-header" style="border-bottom: none; padding-bottom: 0; display: flex; justify-content: space-between; align-items: center;">
             <h4 style="margin: 0; color: var(--primary-hover);">Biểu đồ doanh thu bán bánh ngọt mini & Tea Break</h4>
-            <div style="display: flex; gap: 8px;">
-              <button class="btn btn-secondary filter-btn active" onclick="setAnalyticsRange('7days')" style="padding: 6px 12px; font-size: 12px;">7 ngày qua</button>
-              <button class="btn btn-secondary filter-btn" onclick="setAnalyticsRange('30days')" style="padding: 6px 12px; font-size: 12px;">30 ngày qua</button>
-              <button class="btn btn-secondary filter-btn" onclick="setAnalyticsRange('thismonth')" style="padding: 6px 12px; font-size: 12px;">Tháng này</button>
+            <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <label for="revenue-from" style="font-size: 13px; color: var(--gray-600); font-weight: 600;">Từ ngày:</label>
+                <input type="date" id="revenue-from" class="form-control" style="padding: 6px 10px; font-size: 13px; width: 140px;" required>
+              </div>
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <label for="revenue-to" style="font-size: 13px; color: var(--gray-600); font-weight: 600;">Đến ngày:</label>
+                <input type="date" id="revenue-to" class="form-control" style="padding: 6px 10px; font-size: 13px; width: 140px;" required>
+              </div>
+              <button class="btn btn-primary" onclick="loadAdminAnalyticsCustom()" style="padding: 8px 16px; font-size: 13px;">Xem báo cáo</button>
             </div>
           </div>
           <!-- Custom HTML Bar Chart container -->
@@ -308,8 +314,12 @@
           </div>
           <div class="form-row">
             <div class="form-group" style="grid-column: span 2;">
-              <label for="setting-logo-file">Hoặc tải tệp ảnh làm Logo từ máy tính:</label>
+              <label for="setting-logo-file">Hoặc tải tệp ảnh làm Logo từ máy tính (chấp nhận JPG, PNG, WEBP, SVG - tối đa 5MB):</label>
               <input type="file" id="setting-logo-file" class="form-control" accept="image/*">
+              <div id="logo-preview-container" style="margin-top: 10px; display: none;">
+                <span style="font-size: 13px; color: var(--gray-600); display: block; margin-bottom: 4px;">Xem trước Logo:</span>
+                <img id="logo-preview" src="" alt="Logo Preview" style="max-height: 80px; max-width: 200px; object-fit: contain; border: 1px dashed var(--gray-300); padding: 4px; border-radius: var(--radius-sm);">
+              </div>
             </div>
           </div>
 

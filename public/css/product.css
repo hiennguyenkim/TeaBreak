@@ -839,7 +839,61 @@
 /* ======================== RESPONSIVE ======================== */
 @media (max-width: 1024px) {
   .product-layout { grid-template-columns: 1fr; }
-  .filter-sidebar { position: static; }
+  
+  .filter-sidebar {
+    position: static;
+    padding: 16px;
+  }
+
+  /* Sticky category section on mobile */
+  .filter-sidebar .filter-section:first-of-type {
+    position: sticky;
+    top: 68px; /* Height of header on mobile */
+    background: white;
+    z-index: 100;
+    padding: 12px 16px;
+    margin: -16px -16px 16px -16px; /* offset sidebar padding */
+    border-bottom: 2px solid var(--primary-light);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+
+  .filter-sidebar .filter-section:first-of-type h4 {
+    display: none;
+  }
+
+  .filter-sidebar #category-filter-list {
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+    gap: 10px;
+    padding: 4px 0;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .filter-sidebar #category-filter-list .filter-checkbox {
+    display: inline-flex;
+    align-items: center;
+    background: var(--light);
+    padding: 8px 16px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--primary-light);
+    cursor: pointer;
+    font-size: 13px;
+    margin: 0;
+    flex-shrink: 0;
+    transition: var(--transition-fast);
+  }
+
+  .filter-sidebar #category-filter-list .filter-checkbox:hover {
+    background: var(--primary-light);
+  }
+
+  .filter-sidebar #category-filter-list .filter-checkbox input:checked + span {
+    color: var(--primary-dark);
+    font-weight: 700;
+  }
+
   .detail-layout  { grid-template-columns: 1fr; gap: 36px; }
 }
 

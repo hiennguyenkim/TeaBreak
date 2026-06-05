@@ -400,12 +400,20 @@ exports.updateOrderStatus = async (req, res) => {
 
         // Set status back to available if it was out of stock
         const product = await Product.findById(item.productId);
-        if (product.status === 'out_of_stock' && product.stock > 0) {
+        if (product && product.status === 'out_of_stock' && product.stock > 0) {
           product.status = 'available';
           await product.save();
         }
       }
     }
+
+    // Audit status change
+    order.statusHistory.push({
+      status: orderStatus,
+      updatedBy: req.user.id,
+      updatedByName: req.user.name || 'Nhân viên',
+      note: req.body.note || 'Cập nhật trạng thái đơn hàng'
+    });
 
     await order.save();
 
@@ -494,11 +502,19 @@ exports.cancelOrder = async (req, res) => {
       });
 
       const product = await Product.findById(item.productId);
-      if (product.status === 'out_of_stock' && product.stock > 0) {
+      if (product && product.status === 'out_of_stock' && product.stock > 0) {
         product.status = 'available';
         await product.save();
       }
     }
+
+    // Audit status change
+    order.statusHistory.push({
+      status: 'cancelled',
+      updatedBy: req.user.id,
+      updatedByName: req.user.name || 'Khách hàng',
+      note: 'Khách hàng tự hủy đơn hàng'
+    });
 
     await order.save();
 
@@ -559,6 +575,138 @@ exports.trackOrder = async (req, res) => {
         note: order.note,
         createdAt: order.createdAt,
       },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// @desc    Update order details (Customer or Staff/Admin editing pending order)
+// @route   PUT /api/orders/:id
+// @access  Private
+exports.updateOrder = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: 'Không tìm thấy đơn hàng',
+      });
+    }
+
+    // Access check: User must own the order, or be Staff/Admin
+    if (req.user.role === 'user' && order.userId.toString() !== req.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: 'Bạn không có quyền chỉnh sửa đơn hàng này',
+      });
+    }
+
+    // Status check: Cannot edit if already shipping, delivered, completed, cancelled, refunded
+    if (['shipping', 'delivered', 'completed', 'cancelled', 'refunded'].includes(order.orderStatus)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Đơn hàng đang vận chuyển hoặc đã hoàn thành, không thể chỉnh sửa',
+      });
+    }
+
+    const { fullname, phone, address, deliveryTime, note, items } = req.body;
+
+    if (fullname) order.fullname = fullname;
+    if (phone) order.phone = phone;
+    if (address) order.address = address;
+    if (deliveryTime) order.deliveryTime = deliveryTime;
+    if (note !== undefined) order.note = note;
+
+    // If items are provided, update quantities and recalculate total
+    if (items && Array.isArray(items)) {
+      let totalAmount = 0;
+      const updatedItems = [];
+
+      for (const item of items) {
+        const product = await Product.findById(item.productId);
+        if (!product) {
+          return res.status(404).json({
+            success: false,
+            message: `Sản phẩm với ID ${item.productId} không còn tồn tại`,
+          });
+        }
+
+        // Adjust stock based on quantity difference
+        const existingItem = order.items.find(i => i.productId.toString() === item.productId.toString());
+        const existingQty = existingItem ? existingItem.quantity : 0;
+        const diffQty = item.quantity - existingQty;
+
+        if (diffQty > 0) {
+          if (product.stock < diffQty || product.status === 'out_of_stock') {
+            return res.status(400).json({
+              success: false,
+              message: `Sản phẩm ${product.name} không đủ hàng tồn kho thêm (Cần: ${diffQty}, Còn: ${product.stock})`,
+            });
+          }
+        }
+
+        // Apply stock update
+        product.stock -= diffQty;
+        if (product.stock === 0) {
+          product.status = 'out_of_stock';
+        } else if (product.stock > 0 && product.status === 'out_of_stock') {
+          product.status = 'available';
+        }
+        await product.save();
+
+        totalAmount += product.price * item.quantity;
+
+        updatedItems.push({
+          productId: item.productId,
+          name: product.name,
+          price: product.price,
+          quantity: item.quantity,
+          size: item.size || (existingItem ? existingItem.size : 'Standard'),
+          flavor: item.flavor || (existingItem ? existingItem.flavor : 'Standard'),
+          note: item.note !== undefined ? item.note : (existingItem ? existingItem.note : ''),
+        });
+      }
+
+      // Restore stock for any removed items
+      for (const existingItem of order.items) {
+        const stillExists = items.some(i => i.productId.toString() === existingItem.productId.toString());
+        if (!stillExists) {
+          const product = await Product.findById(existingItem.productId);
+          if (product) {
+            product.stock += existingItem.quantity;
+            if (product.status === 'out_of_stock' && product.stock > 0) {
+              product.status = 'available';
+            }
+            await product.save();
+          }
+        }
+      }
+
+      order.items = updatedItems;
+      order.totalAmount = totalAmount;
+      if (order.discountAmount > totalAmount) {
+        order.discountAmount = totalAmount;
+      }
+      order.finalAmount = totalAmount - order.discountAmount;
+    }
+
+    order.statusHistory.push({
+      status: order.orderStatus,
+      updatedBy: req.user.id,
+      updatedByName: req.user.name || 'Người dùng',
+      note: 'Chỉnh sửa thông tin đơn hàng'
+    });
+
+    await order.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Chỉnh sửa đơn hàng thành công!',
+      order,
     });
   } catch (error) {
     res.status(500).json({

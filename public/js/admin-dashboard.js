@@ -265,16 +265,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  window.deleteAdminProduct = async (id) => {
-    if (!confirm('Bạn có chắc chắn muốn xóa vĩnh viễn sản phẩm này khỏi tiệm bánh không?')) return;
-
-    try {
-      const data = await fetchAPI(`/api/products/${id}`, { method: 'DELETE' });
-      if (data.success) {
-        showToast(data.message, 'success');
-        loadAdminProducts();
-      }
-    } catch (e) {}
+  window.deleteAdminProduct = (id) => {
+    showConfirmModal('Bạn có chắc chắn muốn xóa vĩnh viễn sản phẩm này khỏi tiệm bánh không?', async () => {
+      try {
+        const data = await fetchAPI(`/api/products/${id}`, { method: 'DELETE' });
+        if (data.success) {
+          showToast(data.message, 'success');
+          loadAdminProducts();
+        }
+      } catch (e) {}
+    });
   };
 
   // ================= TAB: CATEGORIES =================
@@ -412,19 +412,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  window.deleteAdminCategory = async (id) => {
-    if (!confirm('Bạn có chắc chắn muốn xóa danh mục này?')) return;
-
-    try {
-      const data = await fetchAPI(`/api/categories/${id}`, { method: 'DELETE' });
-      if (data.success) {
-        showToast(data.message, 'success');
-        loadAdminCategories();
-        // Update cached categories
-        const catRes = await fetchAPI('/api/categories');
-        if (catRes.success) categoriesCache = catRes.categories;
-      }
-    } catch (e) {}
+  window.deleteAdminCategory = (id) => {
+    showConfirmModal('Bạn có chắc chắn muốn xóa danh mục này?', async () => {
+      try {
+        const data = await fetchAPI(`/api/categories/${id}`, { method: 'DELETE' });
+        if (data.success) {
+          showToast(data.message, 'success');
+          loadAdminCategories();
+          // Update cached categories
+          const catRes = await fetchAPI('/api/categories');
+          if (catRes.success) categoriesCache = catRes.categories;
+        }
+      } catch (e) {}
+    });
   };
 
   // ================= TAB: ACCOUNTS MANAGEMENT =================
@@ -659,16 +659,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  window.deleteAdminAccount = async (id) => {
-    if (!confirm('Bạn có chắc chắn muốn xóa tài khoản người dùng này không?')) return;
-
-    try {
-      const data = await fetchAPI(`/api/users/${id}`, { method: 'DELETE' });
-      if (data.success) {
-        showToast(data.message, 'success');
-        loadAdminAccounts();
-      }
-    } catch (e) {}
+  window.deleteAdminAccount = (id) => {
+    showConfirmModal('Bạn có chắc chắn muốn xóa tài khoản người dùng này không?', async () => {
+      try {
+        const data = await fetchAPI(`/api/users/${id}`, { method: 'DELETE' });
+        if (data.success) {
+          showToast(data.message, 'success');
+          loadAdminAccounts();
+        }
+      } catch (e) {}
+    });
   };
 
   // ================= TAB: COUPONS (PROMOTIONS) =================
@@ -814,16 +814,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  window.deleteAdminCoupon = async (id) => {
-    if (!confirm('Bạn có muốn xóa mã giảm giá này?')) return;
-
-    try {
-      const data = await fetchAPI(`/api/promotions/${id}`, { method: 'DELETE' });
-      if (data.success) {
-        showToast(data.message, 'success');
-        loadAdminCoupons();
-      }
-    } catch (e) {}
+  window.deleteAdminCoupon = (id) => {
+    showConfirmModal('Bạn có muốn xóa mã giảm giá này?', async () => {
+      try {
+        const data = await fetchAPI(`/api/promotions/${id}`, { method: 'DELETE' });
+        if (data.success) {
+          showToast(data.message, 'success');
+          loadAdminCoupons();
+        }
+      } catch (e) {}
+    });
   };
 
   // ================= TAB: REVIEWS MODERATION =================
@@ -925,25 +925,40 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (e) {}
   };
 
-  window.deleteAdminReview = async (reviewId) => {
-    if (!confirm('Bạn có muốn xóa vĩnh viễn đánh giá này không?')) return;
-
-    try {
-      const data = await fetchAPI(`/api/reviews/${reviewId}`, { method: 'DELETE' });
-      if (data.success) {
-        showToast(data.message, 'success');
-        loadAdminReviews();
-      }
-    } catch (e) {}
+  window.deleteAdminReview = (reviewId) => {
+    showConfirmModal('Bạn có muốn xóa vĩnh viễn đánh giá này không?', async () => {
+      try {
+        const data = await fetchAPI(`/api/reviews/${reviewId}`, { method: 'DELETE' });
+        if (data.success) {
+          showToast(data.message, 'success');
+          loadAdminReviews();
+        }
+      } catch (e) {}
+    });
   };
 
   // ================= TAB: ANALYTICS & CHARTS =================
-  let currentAnalyticsRange = '7days';
+  const formatDateForInput = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
 
-  window.setAnalyticsRange = (range) => {
-    currentAnalyticsRange = range;
-    document.querySelectorAll('#tab-stats .filter-btn').forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
+  const initRevenueDates = () => {
+    const fromInput = document.getElementById('revenue-from');
+    const toInput = document.getElementById('revenue-to');
+    if (fromInput && toInput && !fromInput.value && !toInput.value) {
+      const today = new Date();
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(today.getDate() - 7);
+      
+      fromInput.value = formatDateForInput(sevenDaysAgo);
+      toInput.value = formatDateForInput(today);
+    }
+  };
+
+  window.loadAdminAnalyticsCustom = () => {
     loadAdminAnalytics();
   };
 
@@ -951,10 +966,34 @@ document.addEventListener('DOMContentLoaded', async () => {
     const chartViewport = document.getElementById('revenue-chart-viewport');
     if (!chartViewport) return;
 
+    initRevenueDates();
+
+    const fromVal = document.getElementById('revenue-from').value;
+    const toVal = document.getElementById('revenue-to').value;
+
+    if (!fromVal || !toVal) {
+      chartViewport.innerHTML = '<div style="margin: auto; color: var(--danger);">Vui lòng chọn khoảng ngày đầy đủ.</div>';
+      return;
+    }
+
+    const fromDate = new Date(fromVal);
+    const toDate = new Date(toVal);
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+
+    if (fromDate > toDate) {
+      showToast('Ngày bắt đầu không được sau ngày kết thúc', 'warning');
+      return;
+    }
+    if (toDate > today) {
+      showToast('Ngày kết thúc không được sau ngày hôm nay', 'warning');
+      return;
+    }
+
     chartViewport.innerHTML = '<div style="margin: auto; color: var(--primary-hover); font-weight: 600;">Đang nạp báo cáo doanh thu...</div>';
 
     try {
-      const data = await fetchAPI(`/api/dashboard/revenue-report?range=${currentAnalyticsRange}`);
+      const data = await fetchAPI(`/api/dashboard/revenue-report?from=${fromVal}&to=${toVal}`);
       if (data.success) {
         renderRevenueChart(data.report);
       }
@@ -1009,11 +1048,56 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('setting-email').value = settings.email || '';
         document.getElementById('setting-opening-hours').value = settings.openingHours || '';
         document.getElementById('setting-map-embed').value = settings.mapEmbed || '';
+
+        // Show image preview if logoIcon is a path/data URL
+        const previewImg = document.getElementById('logo-preview');
+        const previewCont = document.getElementById('logo-preview-container');
+        if (previewImg && previewCont) {
+          if (settings.logoIcon && (settings.logoIcon.startsWith('data:image/') || settings.logoIcon.startsWith('/uploads/') || settings.logoIcon.startsWith('http') || settings.logoIcon.startsWith('/public/'))) {
+            previewImg.src = settings.logoIcon;
+            previewCont.style.display = 'block';
+          } else {
+            previewCont.style.display = 'none';
+          }
+        }
       }
     } catch (e) {
       showToast('Không thể tải cấu hình cài đặt.', 'danger');
     }
   };
+
+  // Attach logo file input change listener for preview and local validation
+  const logoFileInput = document.getElementById('setting-logo-file');
+  if (logoFileInput) {
+    logoFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        // Validation of file type
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/svg+xml'];
+        if (!allowedTypes.includes(file.type)) {
+          showToast('Vui lòng chỉ chọn tệp tin hình ảnh (.jpg, .png, .webp, .svg)', 'warning');
+          logoFileInput.value = '';
+          return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+          showToast('Kích thước tệp tin tối đa là 5MB', 'warning');
+          logoFileInput.value = '';
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const previewImg = document.getElementById('logo-preview');
+          const previewCont = document.getElementById('logo-preview-container');
+          if (previewImg && previewCont) {
+            previewImg.src = event.target.result;
+            previewCont.style.display = 'block';
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
 
   const settingsForm = document.getElementById('admin-settings-form');
   if (settingsForm) {
@@ -1033,7 +1117,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         formData.append('openingHours', document.getElementById('setting-opening-hours').value);
         formData.append('mapEmbed', document.getElementById('setting-map-embed').value);
 
-        const logoFileInput = document.getElementById('setting-logo-file');
         if (logoFileInput && logoFileInput.files[0]) {
           formData.append('logoFile', logoFileInput.files[0]);
         }
@@ -1048,6 +1131,15 @@ document.addEventListener('DOMContentLoaded', async () => {
           if (logoFileInput) logoFileInput.value = '';
           if (res.settings && res.settings.logoIcon) {
             document.getElementById('setting-logo-icon').value = res.settings.logoIcon;
+            
+            const previewImg = document.getElementById('logo-preview');
+            const previewCont = document.getElementById('logo-preview-container');
+            if (previewImg && previewCont) {
+              if (res.settings.logoIcon.startsWith('data:image/') || res.settings.logoIcon.startsWith('/uploads/') || res.settings.logoIcon.startsWith('http') || res.settings.logoIcon.startsWith('/public/')) {
+                previewImg.src = res.settings.logoIcon;
+                previewCont.style.display = 'block';
+              }
+            }
           }
           // Reload global settings dynamically on dashboard immediately
           if (typeof loadGlobalSettings === 'function') {

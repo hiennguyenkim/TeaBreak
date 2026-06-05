@@ -13,6 +13,9 @@ const {
   createUser,
   updateUser,
   deleteUser,
+  getWishlist,
+  addToWishlist,
+  removeFromWishlist,
 } = require('../controllers/userController');
 const { protect } = require('../middlewares/authMiddleware');
 const { restrictTo } = require('../middlewares/roleMiddleware');
@@ -21,6 +24,7 @@ const {
   validateProfileUpdate,
   validateAdminCreateUser,
   validateAdminUpdateUser,
+  validateAddress,
 } = require('../middlewares/validationMiddleware');
 
 const { getMe } = require('../controllers/authController');
@@ -30,9 +34,14 @@ router.get('/me', protect, getMe);
 router.put('/me', protect, uploadAvatar.single('avatarFile'), validateProfileUpdate, updateProfile);
 router.put('/profile', protect, uploadAvatar.single('avatarFile'), validateProfileUpdate, updateProfile);
 router.get('/addresses', protect, getAddresses);
-router.post('/addresses', protect, addAddress);
-router.put('/addresses/:id', protect, updateAddress);
+router.post('/addresses', protect, validateAddress, addAddress);
+router.put('/addresses/:id', protect, validateAddress, updateAddress);
 router.delete('/addresses/:id', protect, deleteAddress);
+
+// Wishlist routes
+router.get('/wishlist', protect, getWishlist);
+router.post('/wishlist', protect, addToWishlist);
+router.delete('/wishlist/:id', protect, removeFromWishlist);
 
 // Staff / Admin routes
 router.get('/', protect, restrictTo('staff', 'admin'), getUsers);

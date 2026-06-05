@@ -30,14 +30,20 @@ const userSchema = new mongoose.Schema(
       required: [true, 'Vui lòng cung cấp số điện thoại'],
       trim: true,
       match: [
-        /^(0|84|\+84)(3|5|7|8|9)[0-9]{8}$/,
-        'Số điện thoại không đúng định dạng Việt Nam (gồm 10 chữ số)',
+        /^0\d{8}$|^0\d{10}$/,
+        'Số điện thoại bắt đầu bằng số 0, tổng độ dài 9 hoặc 11 ký tự',
       ],
     },
     address: {
       type: String,
       trim: true,
     },
+    wishlist: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product',
+      }
+    ],
     avatar: {
       type: String,
       default: '',

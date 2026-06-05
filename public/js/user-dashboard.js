@@ -35,7 +35,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
 
-    // Also update form preview if exists
     const previewImg = document.getElementById('profile-avatar-preview');
     const placeholderEl = document.getElementById('profile-avatar-placeholder');
     if (previewImg && placeholderEl) {
@@ -51,7 +50,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  // Handle instant avatar file preview
   const avatarFileInput = document.getElementById('profile-avatar-file');
   if (avatarFileInput) {
     avatarFileInput.addEventListener('change', (e) => {
@@ -87,7 +85,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (panel.id === tabId) panel.classList.add('active');
     });
 
-    // Run tab-specific loader
     if (tabId === 'tab-profile') loadProfileData();
     if (tabId === 'tab-orders') loadOrderHistory();
     if (tabId === 'tab-addresses') loadAddressBook();
@@ -100,6 +97,127 @@ document.addEventListener('DOMContentLoaded', async () => {
       switchTab(item.dataset.tab);
     });
   });
+
+  // Sync tab from URL query parameter
+  const urlParams = new URLSearchParams(window.location.search);
+  const targetTab = urlParams.get('tab');
+  if (targetTab && ['tab-profile', 'tab-orders', 'tab-addresses', 'tab-wishlist', 'tab-teabreak'].includes(targetTab)) {
+    switchTab(targetTab);
+  } else {
+    switchTab('tab-profile');
+  }
+
+  // Vietnam Administrative Regions Population Dropdowns Helper
+  const populateAddressDropdowns = (citySelect, districtSelect, wardSelect, initialData = null) => {
+    citySelect.innerHTML = '<option value="">-- Chọn Tỉnh/Thành phố --</option>';
+    
+    // Major cities
+    const majorCities = Object.keys(vietnamRegions);
+    majorCities.forEach(city => {
+      citySelect.innerHTML += `<option value="${city}">${city}</option>`;
+    });
+    
+    // Other provinces
+    otherProvinces.forEach(prov => {
+      citySelect.innerHTML += `<option value="${prov}">${prov}</option>`;
+    });
+
+    const handleCityChange = () => {
+      const selectedCity = citySelect.value;
+      if (vietnamRegions[selectedCity]) {
+        // Swap inputs back to select if they were inputs
+        if (districtSelect.tagName === 'INPUT') {
+          const newSelect = document.createElement('select');
+          newSelect.id = districtSelect.id;
+          newSelect.className = 'form-control';
+          newSelect.required = true;
+          districtSelect.parentNode.replaceChild(newSelect, districtSelect);
+          districtSelect = newSelect;
+          districtSelect.addEventListener('change', handleDistrictChange);
+        }
+        if (wardSelect.tagName === 'INPUT') {
+          const newSelect = document.createElement('select');
+          newSelect.id = wardSelect.id;
+          newSelect.className = 'form-control';
+          newSelect.required = true;
+          wardSelect.parentNode.replaceChild(newSelect, wardSelect);
+          wardSelect = newSelect;
+        }
+
+        districtSelect.innerHTML = '<option value="">-- Chọn Quận/Huyện --</option>';
+        Object.keys(vietnamRegions[selectedCity]).forEach(dist => {
+          districtSelect.innerHTML += `<option value="${dist}">${dist}</option>`;
+        });
+        wardSelect.innerHTML = '<option value="">-- Chọn Phường/Xã --</option>';
+      } else if (selectedCity) {
+        // Other province - swap to input text
+        if (districtSelect.tagName === 'SELECT') {
+          const newInput = document.createElement('input');
+          newInput.type = 'text';
+          newInput.id = districtSelect.id;
+          newInput.className = 'form-control';
+          newInput.placeholder = 'Nhập Quận/Huyện';
+          newInput.required = true;
+          districtSelect.parentNode.replaceChild(newInput, districtSelect);
+          districtSelect = newInput;
+        }
+        if (wardSelect.tagName === 'SELECT') {
+          const newInput = document.createElement('input');
+          newInput.type = 'text';
+          newInput.id = wardSelect.id;
+          newInput.className = 'form-control';
+          newInput.placeholder = 'Nhập Phường/Xã';
+          newInput.required = true;
+          wardSelect.parentNode.replaceChild(newInput, wardSelect);
+          wardSelect = newInput;
+        }
+      } else {
+        if (districtSelect.tagName === 'SELECT') districtSelect.innerHTML = '<option value="">-- Chọn Quận/Huyện --</option>';
+        if (wardSelect.tagName === 'SELECT') wardSelect.innerHTML = '<option value="">-- Chọn Phường/Xã --</option>';
+      }
+    };
+
+    const handleDistrictChange = () => {
+      const selectedCity = citySelect.value;
+      const selectedDistrict = districtSelect.value;
+      if (vietnamRegions[selectedCity] && vietnamRegions[selectedCity][selectedDistrict] && wardSelect.tagName === 'SELECT') {
+        wardSelect.innerHTML = '<option value="">-- Chọn Phường/Xã --</option>';
+        vietnamRegions[selectedCity][selectedDistrict].forEach(w => {
+          wardSelect.innerHTML += `<option value="${w}">${w}</option>`;
+        });
+      }
+    };
+
+    citySelect.addEventListener('change', handleCityChange);
+    if (districtSelect.tagName === 'SELECT') {
+      districtSelect.addEventListener('change', handleDistrictChange);
+    }
+
+    if (initialData) {
+      citySelect.value = initialData.city;
+      handleCityChange();
+      if (districtSelect.tagName === 'SELECT') {
+        districtSelect.value = initialData.district;
+        handleDistrictChange();
+        if (wardSelect.tagName === 'SELECT') {
+          wardSelect.value = initialData.ward;
+        } else {
+          wardSelect.value = initialData.ward;
+        }
+      } else {
+        districtSelect.value = initialData.district;
+        wardSelect.value = initialData.ward;
+      }
+    }
+  };
+
+  // Initialize add address form dropdowns
+  const addressCity = document.getElementById('address-city');
+  const addressDistrict = document.getElementById('address-district');
+  const addressWard = document.getElementById('address-ward');
+  if (addressCity && addressDistrict && addressWard) {
+    populateAddressDropdowns(addressCity, addressDistrict, addressWard);
+  }
 
   // ================= TAB: PROFILE =================
   const loadProfileData = async () => {
@@ -115,7 +233,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (e) {}
   };
 
-  // Submit profile edits
   const profileForm = document.getElementById('profile-edit-form');
   if (profileForm) {
     profileForm.addEventListener('submit', async (e) => {
@@ -130,9 +247,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
       }
 
-      const phoneRegex = /^(0|84|\+84)(3|5|7|8|9)[0-9]{8}$/;
+      const phoneInput = document.getElementById('profile-phone');
+      hideFieldError(phoneInput);
+      const phoneRegex = /^0\d{8}$|^0\d{10}$/;
       if (phone && !phoneRegex.test(phone)) {
-        showToast('Số điện thoại không đúng định dạng Việt Nam (ví dụ: 0988888888)!', 'warning');
+        showFieldError(phoneInput, 'Số điện thoại bắt đầu bằng số 0, gồm 9 hoặc 11 chữ số');
         return;
       }
 
@@ -159,7 +278,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Change Password form handler
   const pwdForm = document.getElementById('profile-password-form');
   if (pwdForm) {
     pwdForm.addEventListener('submit', async (e) => {
@@ -226,10 +344,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         <div class="oh-item">${item.name} (${item.size} | ${item.flavor}) x ${item.quantity}</div>
       `).join('');
 
-      // Actions button
       let actionsHTML = '';
-      if (order.orderStatus === 'pending') {
-        actionsHTML = `<button class="btn btn-outline" style="padding: 6px 12px; font-size: 13px;" onclick="cancelCustomerOrder('${order._id}')">Hủy đơn</button>`;
+      if (['pending', 'confirmed', 'preparing'].includes(order.orderStatus)) {
+        actionsHTML = `
+          <button class="btn btn-outline" style="padding: 6px 12px; font-size: 13px;" onclick="editCustomerOrder('${order._id}')">Chỉnh sửa đơn</button>
+          <button class="btn btn-outline" style="padding: 6px 12px; font-size: 13px; margin-left: 4px;" onclick="cancelCustomerOrder('${order._id}')">Hủy đơn</button>
+        `;
       } else if (order.orderStatus === 'completed') {
         actionsHTML = `<button class="btn btn-primary" style="padding: 6px 12px; font-size: 13px;" onclick="openReviewModal('${order._id}', '${order.items[0].productId}')">Đánh giá sản phẩm</button>`;
       }
@@ -273,16 +393,94 @@ document.addEventListener('DOMContentLoaded', async () => {
   };
 
   window.cancelCustomerOrder = async (orderId) => {
-    if (!confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?')) return;
+    showConfirmModal('Bạn có chắc chắn muốn hủy đơn hàng này không?', async () => {
+      try {
+        const data = await fetchAPI(`/api/orders/${orderId}/cancel`, { method: 'POST' });
+        if (data.success) {
+          showToast(data.message, 'success');
+          loadOrderHistory();
+        }
+      } catch (e) {}
+    });
+  };
 
+  // Edit Order Logic
+  window.editCustomerOrder = async (orderId) => {
     try {
-      const data = await fetchAPI(`/api/orders/${orderId}/cancel`, { method: 'POST' });
-      if (data.success) {
-        showToast(data.message, 'success');
-        loadOrderHistory();
+      const data = await fetchAPI(`/api/orders/${orderId}`);
+      if (data.success && data.order) {
+        const order = data.order;
+        document.getElementById('edit-order-id').value = order._id;
+        document.getElementById('edit-order-fullname').value = order.fullname;
+        document.getElementById('edit-order-phone').value = order.phone;
+        document.getElementById('edit-order-address').value = order.address;
+        document.getElementById('edit-order-time').value = order.deliveryTime || '12:00';
+        document.getElementById('edit-order-note').value = order.note || '';
+
+        const itemsList = document.getElementById('edit-order-items-list');
+        itemsList.innerHTML = order.items.map(item => `
+          <div class="edit-order-item-row" data-product-id="${item.productId}" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--gray-200); padding-bottom: 8px;">
+            <div style="font-size: 14px;">${item.name} (${item.size} | ${item.flavor})</div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <label style="font-size: 12px; margin-bottom: 0;">SL:</label>
+              <input type="number" class="form-control item-qty-input" value="${item.quantity}" min="1" style="width: 70px; padding: 4px; font-size: 13px;">
+              <input type="hidden" class="item-size-input" value="${item.size}">
+              <input type="hidden" class="item-flavor-input" value="${item.flavor}">
+            </div>
+          </div>
+        `).join('');
+
+        document.getElementById('edit-order-modal').classList.add('active');
       }
     } catch (e) {}
   };
+
+  window.closeEditOrderModal = () => {
+    document.getElementById('edit-order-modal').classList.remove('active');
+  };
+
+  const orderEditForm = document.getElementById('order-edit-form');
+  if (orderEditForm) {
+    orderEditForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const orderId = document.getElementById('edit-order-id').value;
+      const fullname = document.getElementById('edit-order-fullname').value.trim();
+      const phone = document.getElementById('edit-order-phone').value.trim();
+      const address = document.getElementById('edit-order-address').value.trim();
+      const deliveryTime = document.getElementById('edit-order-time').value;
+      const note = document.getElementById('edit-order-note').value.trim();
+
+      const phoneInput = document.getElementById('edit-order-phone');
+      hideFieldError(phoneInput);
+      const phoneRegex = /^0\d{8}$|^0\d{10}$/;
+      if (phone && !phoneRegex.test(phone)) {
+        showFieldError(phoneInput, 'Số điện thoại bắt đầu bằng số 0, gồm 9 hoặc 11 chữ số');
+        return;
+      }
+
+      const itemRows = document.querySelectorAll('.edit-order-item-row');
+      const items = Array.from(itemRows).map(row => {
+        return {
+          productId: row.dataset.productId,
+          quantity: parseInt(row.querySelector('.item-qty-input').value, 10),
+          size: row.querySelector('.item-size-input').value,
+          flavor: row.querySelector('.item-flavor-input').value
+        };
+      });
+
+      try {
+        const data = await fetchAPI(`/api/orders/${orderId}`, {
+          method: 'PUT',
+          body: JSON.stringify({ fullname, phone, address, deliveryTime, note, items })
+        });
+        if (data.success) {
+          showToast(data.message, 'success');
+          closeEditOrderModal();
+          loadOrderHistory();
+        }
+      } catch (e) {}
+    });
+  }
 
   // ================= TAB: ADDRESSES =================
   const loadAddressBook = async () => {
@@ -319,6 +517,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             <div class="address-actions">
               ${!addr.isDefault ? `<button class="address-action-btn" onclick="setDefaultAddress('${addr._id}')">Đặt mặc định</button>` : ''}
+              <button class="address-action-btn" onclick="editAddressBookItem('${addr._id}')">Sửa</button>
               <button class="address-action-btn delete" onclick="deleteAddressBookItem('${addr._id}')">Xóa</button>
             </div>
           </div>
@@ -341,18 +540,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   };
 
   window.deleteAddressBookItem = async (addressId) => {
-    if (!confirm('Bạn có muốn xóa địa chỉ này khỏi danh mục của bạn không?')) return;
-
-    try {
-      const data = await fetchAPI(`/api/users/addresses/${addressId}`, { method: 'DELETE' });
-      if (data.success) {
-        showToast(data.message, 'success');
-        loadAddressBook();
-      }
-    } catch (e) {}
+    showConfirmModal('Bạn có chắc muốn xóa địa chỉ này không?', async () => {
+      try {
+        const data = await fetchAPI(`/api/users/addresses/${addressId}`, { method: 'DELETE' });
+        if (data.success) {
+          showToast(data.message, 'success');
+          loadAddressBook();
+        }
+      } catch (e) {}
+    });
   };
 
-  // Add Address Form handler
   const addressForm = document.getElementById('address-add-form');
   if (addressForm) {
     addressForm.addEventListener('submit', async (e) => {
@@ -364,6 +562,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       const district = document.getElementById('address-district').value.trim();
       const city = document.getElementById('address-city').value.trim();
       const isDefault = document.getElementById('address-default').checked;
+
+      const phoneInput = document.getElementById('address-phone');
+      hideFieldError(phoneInput);
+      const phoneRegex = /^0\d{8}$|^0\d{10}$/;
+      if (phone && !phoneRegex.test(phone)) {
+        showFieldError(phoneInput, 'Số điện thoại bắt đầu bằng số 0, gồm 9 hoặc 11 chữ số');
+        return;
+      }
 
       try {
         const data = await fetchAPI('/api/users/addresses', {
@@ -380,41 +586,98 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  // Edit Address Book item
+  window.editAddressBookItem = async (addressId) => {
+    try {
+      const addressesRes = await fetchAPI('/api/users/addresses');
+      if (addressesRes.success) {
+        const addr = addressesRes.addresses.find(a => a._id === addressId);
+        if (addr) {
+          document.getElementById('edit-address-id').value = addr._id;
+          document.getElementById('edit-address-name').value = addr.receiverName;
+          document.getElementById('edit-address-phone').value = addr.phone;
+          document.getElementById('edit-address-detail').value = addr.addressDetail;
+          document.getElementById('edit-address-default').checked = addr.isDefault;
+
+          const modal = document.getElementById('edit-address-modal');
+          const editCity = document.getElementById('edit-address-city');
+          const editDistrict = document.getElementById('edit-address-district');
+          const editWard = document.getElementById('edit-address-ward');
+
+          populateAddressDropdowns(editCity, editDistrict, editWard, {
+            city: addr.city,
+            district: addr.district,
+            ward: addr.ward
+          });
+
+          modal.classList.add('active');
+        }
+      }
+    } catch (e) {}
+  };
+
+  window.closeEditAddressModal = () => {
+    const modal = document.getElementById('edit-address-modal');
+    if (modal) modal.classList.remove('active');
+  };
+
+  const addressEditForm = document.getElementById('address-edit-form');
+  if (addressEditForm) {
+    addressEditForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const addressId = document.getElementById('edit-address-id').value;
+      const receiverName = document.getElementById('edit-address-name').value.trim();
+      const phone = document.getElementById('edit-address-phone').value.trim();
+      const addressDetail = document.getElementById('edit-address-detail').value.trim();
+      const city = document.getElementById('edit-address-city').value.trim();
+      const district = document.getElementById('edit-address-district').value.trim();
+      const ward = document.getElementById('edit-address-ward').value.trim();
+      const isDefault = document.getElementById('edit-address-default').checked;
+
+      const phoneInput = document.getElementById('edit-address-phone');
+      hideFieldError(phoneInput);
+      const phoneRegex = /^0\d{8}$|^0\d{10}$/;
+      if (phone && !phoneRegex.test(phone)) {
+        showFieldError(phoneInput, 'Số điện thoại bắt đầu bằng số 0, gồm 9 hoặc 11 chữ số');
+        return;
+      }
+
+      try {
+        const data = await fetchAPI(`/api/users/addresses/${addressId}`, {
+          method: 'PUT',
+          body: JSON.stringify({ receiverName, phone, addressDetail, ward, district, city, isDefault }),
+        });
+
+        if (data.success) {
+          showToast(data.message, 'success');
+          closeEditAddressModal();
+          loadAddressBook();
+        }
+      } catch (err) {}
+    });
+  }
+
   // ================= TAB: WISHLIST =================
   const loadWishlist = async () => {
     const wishlistGrid = document.getElementById('wishlist-grid');
     if (!wishlistGrid) return;
 
-    const wishlistIds = JSON.parse(localStorage.getItem('wishlist')) || [];
-    if (wishlistIds.length === 0) {
-      wishlistGrid.innerHTML = '<div class="text-center" style="padding: 40px; color: var(--gray-600); grid-column: 1/-1;">Không có sản phẩm yêu thích nào.</div>';
-      return;
-    }
-
     wishlistGrid.innerHTML = '<div class="text-center" style="grid-column: 1/-1;">Đang tải danh sách yêu thích...</div>';
 
     try {
-      const products = [];
-      for (const id of wishlistIds) {
-        try {
-          const res = await fetchAPI(`/api/products/${id}`);
-          if (res.success && res.product) {
-            products.push(res.product);
-          }
-        } catch (e) {
-          // ignore error (deleted product reference, etc.)
-        }
+      const data = await fetchAPI('/api/users/wishlist');
+      if (data.success) {
+        renderWishlist(data.wishlist || []);
       }
-      renderWishlist(products);
     } catch (e) {
-      wishlistGrid.innerHTML = '<div class="text-center" style="grid-column: 1/-1; color: var(--danger);">Không thể tải wishlist.</div>';
+      wishlistGrid.innerHTML = '<div class="text-center" style="grid-column: 1/-1; color: var(--danger);">Không thể tải danh sách sản phẩm yêu thích.</div>';
     }
   };
 
   const renderWishlist = (products) => {
     const wishlistGrid = document.getElementById('wishlist-grid');
     if (products.length === 0) {
-      wishlistGrid.innerHTML = '<div class="text-center" style="padding: 40px; color: var(--gray-600); grid-column: 1/-1;">Không có sản phẩm yêu thích nào.</div>';
+      wishlistGrid.innerHTML = '<div class="text-center" style="padding: 40px; color: var(--gray-600); grid-column: 1/-1;">Chưa có sản phẩm yêu thích</div>';
       return;
     }
 
@@ -437,11 +700,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     }).join('');
   };
 
-  window.removeWishlistItem = (productId) => {
-    let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
-    wishlist = wishlist.filter(id => id !== productId);
-    localStorage.setItem('wishlist', JSON.stringify(wishlist));
-    loadWishlist();
+  window.removeWishlistItem = async (productId) => {
+    try {
+      const data = await fetchAPI(`/api/users/wishlist/${productId}`, { method: 'DELETE' });
+      if (data.success) {
+        showToast('Đã xóa bánh khỏi danh sách yêu thích!', 'success');
+        loadWishlist();
+      }
+    } catch (e) {}
   };
 
   // ================= MODAL: REVIEW SUBMIT =================
@@ -452,7 +718,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     activeReviewOrderId = orderId;
     activeReviewProductId = productId;
 
-    // Create a dynamic modal container overlay
     let modal = document.getElementById('review-overlay-modal');
     if (!modal) {
       modal = document.createElement('div');
@@ -563,13 +828,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         actionHTML = `
           <div style="margin-top: 16px; border-top: 1px solid var(--gray-200); padding-top: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
             <div>Báo giá từ tiệm: <span class="oh-total text-primary" style="font-size: 18px;">${req.quotedPrice.toLocaleString('vi-VN')}đ</span></div>
-            <button class="btn btn-primary" onclick="acceptTeaBreakQuote('${req._id}')">Chấp nhận & Đặt tiệc</button>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-outline" style="padding: 6px 12px; font-size: 13px;" onclick="editTeaBreakRequest('${req._id}')">Chỉnh sửa</button>
+              <button class="btn btn-primary" onclick="acceptTeaBreakQuote('${req._id}')">Chấp nhận & Đặt tiệc</button>
+            </div>
+          </div>
+        `;
+      } else if (['pending', 'received', 'consulting'].includes(req.status)) {
+        actionHTML = `
+          <div style="margin-top: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div style="color: var(--gray-600); font-style: italic; font-size: 14px;">Đang chờ nhân viên liên hệ tư vấn và báo giá...</div>
+            <button class="btn btn-outline" style="padding: 6px 12px; font-size: 13px;" onclick="editTeaBreakRequest('${req._id}')">Chỉnh sửa</button>
           </div>
         `;
       } else if (req.status === 'confirmed') {
         actionHTML = `<div style="margin-top: 12px; color: var(--success); font-weight: 700; font-size: 14px;">✓ Yêu cầu đã được xác nhận & chuyển thành đơn hàng!</div>`;
-      } else if (req.status === 'pending') {
-        actionHTML = `<div style="margin-top: 12px; color: var(--gray-600); font-style: italic; font-size: 14px;">Đang chờ nhân viên liên hệ tư vấn và báo giá...</div>`;
       }
 
       return `
@@ -597,25 +870,115 @@ document.addEventListener('DOMContentLoaded', async () => {
   };
 
   window.acceptTeaBreakQuote = async (reqId) => {
-    const address = prompt('Vui lòng điền địa chỉ giao nhận & setup tiệc:', '');
-    if (address === null) return; // cancel
-    if (!address.trim()) {
-      showToast('Vui lòng nhập địa chỉ nhận hàng', 'warning');
-      return;
-    }
+    showPromptModal('Vui lòng điền địa chỉ giao nhận & setup tiệc:', '', async (address) => {
+      if (!address || !address.trim()) {
+        showToast('Vui lòng nhập địa chỉ nhận hàng', 'warning');
+        return;
+      }
 
+      try {
+        const data = await fetchAPI(`/api/teabreak-requests/${reqId}/accept`, {
+          method: 'POST',
+          body: JSON.stringify({ paymentMethod: 'cod', address }),
+        });
+        if (data.success) {
+          showToast(data.message, 'success');
+          loadTeaBreakRequests();
+        }
+      } catch (e) {}
+    });
+  };
+
+  // Edit Tea Break Request Logic
+  window.editTeaBreakRequest = async (reqId) => {
     try {
-      const data = await fetchAPI(`/api/teabreak-requests/${reqId}/accept`, {
-        method: 'POST',
-        body: JSON.stringify({ paymentMethod: 'cod', address }),
-      });
-      if (data.success) {
-        showToast(data.message, 'success');
-        loadTeaBreakRequests();
+      const data = await fetchAPI(`/api/teabreak-requests/${reqId}`);
+      if (data.success && data.request) {
+        const req = data.request;
+        document.getElementById('edit-teabreak-id').value = req._id;
+        document.getElementById('edit-tb-fullname').value = req.fullname;
+        document.getElementById('edit-tb-phone').value = req.phone;
+        document.getElementById('edit-tb-email').value = req.email;
+        document.getElementById('edit-tb-corporate').value = req.corporateName || '';
+        document.getElementById('edit-tb-package').value = req.packageType;
+        document.getElementById('edit-tb-groupsize').value = req.groupSize;
+        document.getElementById('edit-tb-tea').value = req.teaOption;
+        document.getElementById('edit-tb-theme').value = req.eventTheme || '';
+        
+        if (req.expectedDate) {
+          const d = new Date(req.expectedDate);
+          const yyyy = d.getFullYear();
+          const mm = String(d.getMonth() + 1).padStart(2, '0');
+          const dd = String(d.getDate()).padStart(2, '0');
+          document.getElementById('edit-tb-date').value = `${yyyy}-${mm}-${dd}`;
+        }
+        document.getElementById('edit-tb-time').value = req.expectedTime || '14:00';
+        document.getElementById('edit-tb-note').value = req.note || '';
+
+        document.getElementById('edit-teabreak-modal').classList.add('active');
       }
     } catch (e) {}
   };
 
-  // Initial load
-  switchTab('tab-profile');
+  window.closeEditTeaBreakModal = () => {
+    document.getElementById('edit-teabreak-modal').classList.remove('active');
+  };
+
+  const teabreakEditForm = document.getElementById('teabreak-edit-form');
+  if (teabreakEditForm) {
+    teabreakEditForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const reqId = document.getElementById('edit-teabreak-id').value;
+      const fullname = document.getElementById('edit-tb-fullname').value.trim();
+      const phone = document.getElementById('edit-tb-phone').value.trim();
+      const email = document.getElementById('edit-tb-email').value.trim();
+      const corporateName = document.getElementById('edit-tb-corporate').value.trim();
+      const packageType = document.getElementById('edit-tb-package').value;
+      const groupSize = document.getElementById('edit-tb-groupsize').value;
+      const teaOption = document.getElementById('edit-tb-tea').value;
+      const eventTheme = document.getElementById('edit-tb-theme').value.trim();
+      const expectedDate = document.getElementById('edit-tb-date').value;
+      const expectedTime = document.getElementById('edit-tb-time').value;
+      const note = document.getElementById('edit-tb-note').value.trim();
+      const fileInput = document.getElementById('edit-tb-layout');
+
+      const phoneInput = document.getElementById('edit-tb-phone');
+      hideFieldError(phoneInput);
+      const phoneRegex = /^0\d{8}$|^0\d{10}$/;
+      if (phone && !phoneRegex.test(phone)) {
+        showFieldError(phoneInput, 'Số điện thoại bắt đầu bằng số 0, gồm 9 hoặc 11 chữ số');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('fullname', fullname);
+      formData.append('phone', phone);
+      formData.append('email', email);
+      formData.append('corporateName', corporateName);
+      formData.append('packageType', packageType);
+      formData.append('groupSize', groupSize);
+      formData.append('teaOption', teaOption);
+      formData.append('eventTheme', eventTheme);
+      formData.append('expectedDate', expectedDate);
+      formData.append('expectedTime', expectedTime);
+      formData.append('note', note);
+      
+      if (fileInput.files.length > 0) {
+        formData.append('sampleLayout', fileInput.files[0]);
+      }
+
+      try {
+        const data = await fetchAPI(`/api/teabreak-requests/${reqId}`, {
+          method: 'PUT',
+          body: formData,
+        });
+
+        if (data.success) {
+          showToast(data.message, 'success');
+          closeEditTeaBreakModal();
+          loadTeaBreakRequests();
+        }
+      } catch (err) {}
+    });
+  }
 });

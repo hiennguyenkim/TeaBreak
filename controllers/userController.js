@@ -468,3 +468,64 @@ exports.deleteUser = async (req, res) => {
     });
   }
 };
+
+// @desc    Get user's wishlist
+// @route   GET /api/users/wishlist
+// @access  Private
+exports.getWishlist = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).populate('wishlist');
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy người dùng' });
+    }
+    res.status(200).json({
+      success: true,
+      wishlist: user.wishlist || []
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Add product to wishlist
+// @route   POST /api/users/wishlist
+// @access  Private
+exports.addToWishlist = async (req, res) => {
+  try {
+    const { productId } = req.body;
+    if (!productId) {
+      return res.status(400).json({ success: false, message: 'Thiếu thông tin sản phẩm' });
+    }
+    const user = await User.findById(req.user.id);
+    if (!user.wishlist.includes(productId)) {
+      user.wishlist.push(productId);
+      await user.save();
+    }
+    res.status(200).json({
+      success: true,
+      message: 'Đã thêm sản phẩm vào danh sách yêu thích',
+      wishlist: user.wishlist
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Remove product from wishlist
+// @route   DELETE /api/users/wishlist/:id
+// @access  Private
+exports.removeFromWishlist = async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const user = await User.findById(req.user.id);
+    user.wishlist = user.wishlist.filter(id => id.toString() !== productId);
+    await user.save();
+    res.status(200).json({
+      success: true,
+      message: 'Đã xóa sản phẩm khỏi danh sách yêu thích',
+      wishlist: user.wishlist
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

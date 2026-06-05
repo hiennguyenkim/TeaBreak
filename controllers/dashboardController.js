@@ -183,24 +183,34 @@ exports.getRevenueReport = async (req, res) => {
     const range = req.query.range || '7days';
     const now = new Date();
     let startDate = new Date();
+    let endDate = new Date();
 
-    if (range === '7days') {
-      startDate.setDate(now.getDate() - 7);
-    } else if (range === '30days') {
-      startDate.setDate(now.getDate() - 30);
-    } else if (range === 'thismonth') {
-      startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-    } else if (range === 'thisyear') {
-      startDate = new Date(now.getFullYear(), 0, 1);
+    if (req.query.from && req.query.to) {
+      startDate = new Date(req.query.from);
+      startDate.setHours(0, 0, 0, 0);
+      
+      endDate = new Date(req.query.to);
+      endDate.setHours(23, 59, 59, 999);
+    } else {
+      if (range === '7days') {
+        startDate.setDate(now.getDate() - 7);
+      } else if (range === '30days') {
+        startDate.setDate(now.getDate() - 30);
+      } else if (range === 'thismonth') {
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+      } else if (range === 'thisyear') {
+        startDate = new Date(now.getFullYear(), 0, 1);
+      }
+      startDate.setHours(0, 0, 0, 0);
+      endDate = now;
+      endDate.setHours(23, 59, 59, 999);
     }
-
-    startDate.setHours(0, 0, 0, 0);
 
     const report = await Order.aggregate([
       {
         $match: {
           orderStatus: 'completed',
-          updatedAt: { $gte: startDate },
+          updatedAt: { $gte: startDate, $lte: endDate },
         },
       },
       {

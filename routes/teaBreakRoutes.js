@@ -9,6 +9,7 @@ const {
   updateRequestStatus,
   acceptQuote,
   convertToOrder,
+  updateRequest,
 } = require('../controllers/teaBreakController');
 const { protect } = require('../middlewares/authMiddleware');
 const { restrictTo } = require('../middlewares/roleMiddleware');
@@ -24,6 +25,7 @@ const uploadFields = uploadTeaBreak.fields([
 // Customer routes
 router.post('/', restrictTo('user'), uploadFields, createRequest);
 router.get('/my', restrictTo('user'), getMyRequests);
+router.put('/:id', uploadFields, updateRequest);
 router.post('/:id/accept', restrictTo('user'), acceptQuote);
 
 // Staff / Admin routes

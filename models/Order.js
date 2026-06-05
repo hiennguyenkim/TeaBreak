@@ -54,12 +54,25 @@ const orderSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Vui lòng cung cấp số điện thoại người nhận'],
       trim: true,
+      match: [
+        /^0\d{8}$|^0\d{10}$/,
+        'Số điện thoại bắt đầu bằng số 0, tổng độ dài 9 hoặc 11 ký tự',
+      ],
     },
     email: {
       type: String,
       required: [true, 'Vui lòng cung cấp email liên hệ'],
       trim: true,
     },
+    statusHistory: [
+      {
+        status: { type: String, required: true },
+        updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        updatedByName: { type: String },
+        note: { type: String },
+        updatedAt: { type: Date, default: Date.now }
+      }
+    ],
     address: {
       type: String,
       required: [true, 'Vui lòng cung cấp địa chỉ nhận hàng'],

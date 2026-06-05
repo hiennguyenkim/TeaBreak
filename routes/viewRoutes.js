@@ -69,4 +69,12 @@ router.get('/user-dashboard.html', protectView(['user', 'staff', 'admin']), serv
 router.get('/staff-dashboard.html', protectView(['staff', 'admin']), serveView('staff-dashboard.html'));
 router.get('/admin-dashboard.html', protectView(['admin']), serveView('admin-dashboard.html'));
 
+// Wishlist view redirect
+router.get('/wishlist', protectView(['user', 'staff', 'admin']), (req, res) => {
+  res.redirect('/user-dashboard.html?tab=tab-wishlist');
+});
+router.get('/wishlist.html', protectView(['user', 'staff', 'admin']), (req, res) => {
+  res.redirect('/user-dashboard.html?tab=tab-wishlist');
+});
+
 module.exports = router;

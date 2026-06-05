@@ -546,3 +546,164 @@ document.addEventListener('click', (e) => {
     window.location.href = link.href;
   }
 });
+
+// Custom Confirm Modal Replacement
+const showConfirmModal = (message, onConfirm, onCancel = null) => {
+  let modalEl = document.getElementById('custom-confirm-modal');
+  if (!modalEl) {
+    modalEl = document.createElement('div');
+    modalEl.id = 'custom-confirm-modal';
+    modalEl.className = 'admin-modal';
+    modalEl.innerHTML = `
+      <div class="modal-content-card" style="max-width: 480px;">
+        <div class="modal-header-row">
+          <h3>Xác nhận</h3>
+          <button class="modal-close-btn" id="custom-confirm-close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p id="custom-confirm-message" style="font-size: 15px; line-height: 1.5; color: var(--dark);"></p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" id="custom-confirm-btn-cancel" style="padding: 10px 20px;">Hủy</button>
+          <button class="btn btn-primary" id="custom-confirm-btn-ok" style="padding: 10px 20px;">Xác nhận</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modalEl);
+  }
+
+  document.getElementById('custom-confirm-message').textContent = message;
+  
+  const closeModal = () => {
+    modalEl.classList.remove('active');
+  };
+
+  const handleConfirm = () => {
+    closeModal();
+    if (typeof onConfirm === 'function') onConfirm();
+  };
+
+  const handleCancel = () => {
+    closeModal();
+    if (typeof onCancel === 'function') onCancel();
+  };
+
+  const btnOk = document.getElementById('custom-confirm-btn-ok');
+  const btnCancel = document.getElementById('custom-confirm-btn-cancel');
+  const btnClose = document.getElementById('custom-confirm-close');
+
+  const newBtnOk = btnOk.cloneNode(true);
+  const newBtnCancel = btnCancel.cloneNode(true);
+  const newBtnClose = btnClose.cloneNode(true);
+
+  btnOk.parentNode.replaceChild(newBtnOk, btnOk);
+  btnCancel.parentNode.replaceChild(newBtnCancel, btnCancel);
+  btnClose.parentNode.replaceChild(newBtnClose, btnClose);
+
+  newBtnOk.addEventListener('click', handleConfirm);
+  newBtnCancel.addEventListener('click', handleCancel);
+  newBtnClose.addEventListener('click', handleCancel);
+
+  modalEl.classList.add('active');
+};
+
+// Custom Prompt Modal Replacement
+const showPromptModal = (message, defaultValue = '', onSubmit, onCancel = null) => {
+  let modalEl = document.getElementById('custom-prompt-modal');
+  if (!modalEl) {
+    modalEl = document.createElement('div');
+    modalEl.id = 'custom-prompt-modal';
+    modalEl.className = 'admin-modal';
+    modalEl.innerHTML = `
+      <div class="modal-content-card" style="max-width: 480px;">
+        <div class="modal-header-row">
+          <h3>Yêu cầu nhập thông tin</h3>
+          <button class="modal-close-btn" id="custom-prompt-close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p id="custom-prompt-message" style="font-size: 15px; line-height: 1.5; color: var(--dark); margin-bottom: 12px;"></p>
+          <div class="form-group" style="margin-bottom: 0;">
+            <input type="text" id="custom-prompt-input" class="form-control" style="width: 100%; padding: 10px; border: 1px solid var(--gray-300); border-radius: var(--radius-sm);">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" id="custom-prompt-btn-cancel" style="padding: 10px 20px;">Hủy</button>
+          <button class="btn btn-primary" id="custom-prompt-btn-ok" style="padding: 10px 20px;">Đồng ý</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modalEl);
+  }
+
+  document.getElementById('custom-prompt-message').textContent = message;
+  const inputEl = document.getElementById('custom-prompt-input');
+  inputEl.value = defaultValue;
+
+  const closeModal = () => {
+    modalEl.classList.remove('active');
+  };
+
+  const handleConfirm = () => {
+    const val = inputEl.value;
+    closeModal();
+    if (typeof onSubmit === 'function') onSubmit(val);
+  };
+
+  const handleCancel = () => {
+    closeModal();
+    if (typeof onCancel === 'function') onCancel();
+  };
+
+  const btnOk = document.getElementById('custom-prompt-btn-ok');
+  const btnCancel = document.getElementById('custom-prompt-btn-cancel');
+  const btnClose = document.getElementById('custom-prompt-close');
+
+  const newBtnOk = btnOk.cloneNode(true);
+  const newBtnCancel = btnCancel.cloneNode(true);
+  const newBtnClose = btnClose.cloneNode(true);
+
+  btnOk.parentNode.replaceChild(newBtnOk, btnOk);
+  btnCancel.parentNode.replaceChild(newBtnCancel, btnCancel);
+  btnClose.parentNode.replaceChild(newBtnClose, btnClose);
+
+  newBtnOk.addEventListener('click', handleConfirm);
+  newBtnCancel.addEventListener('click', handleCancel);
+  newBtnClose.addEventListener('click', handleCancel);
+
+  modalEl.classList.add('active');
+  setTimeout(() => inputEl.focus(), 100);
+};
+
+// Field validation error helpers
+const showFieldError = (inputEl, message) => {
+  if (!inputEl) return;
+  const formGroup = inputEl.closest('.form-group') || inputEl.parentNode;
+  formGroup.classList.add('has-error');
+  
+  let errorEl = formGroup.querySelector('.field-error-msg');
+  if (!errorEl) {
+    errorEl = document.createElement('span');
+    errorEl.className = 'field-error-msg';
+    formGroup.appendChild(errorEl);
+  }
+  errorEl.textContent = message;
+  errorEl.style.display = 'block';
+};
+
+const hideFieldError = (inputEl) => {
+  if (!inputEl) return;
+  const formGroup = inputEl.closest('.form-group') || inputEl.parentNode;
+  formGroup.classList.remove('has-error');
+  
+  const errorEl = formGroup.querySelector('.field-error-msg');
+  if (errorEl) {
+    errorEl.style.display = 'none';
+    errorEl.textContent = '';
+  }
+};
+
+// Expose functions globally
+window.showConfirmModal = showConfirmModal;
+window.showPromptModal = showPromptModal;
+window.showFieldError = showFieldError;
+window.hideFieldError = hideFieldError;

@@ -399,3 +399,93 @@ exports.convertToOrder = async (req, res) => {
     });
   }
 };
+
+// @desc    Update a teabreak catering request
+// @route   PUT /api/teabreak-requests/:id
+// @access  Private (Customer / Staff / Admin)
+exports.updateRequest = async (req, res) => {
+  try {
+    const request = await TeaBreakRequest.findById(req.params.id);
+    if (!request) {
+      return res.status(404).json({
+        success: false,
+        message: 'Không tìm thấy yêu cầu đặt dịch vụ',
+      });
+    }
+
+    // Access check
+    if (req.user.role === 'user' && request.userId.toString() !== req.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: 'Bạn không có quyền chỉnh sửa yêu cầu này',
+      });
+    }
+
+    // Status check: cannot edit if confirmed or completed or cancelled
+    if (['confirmed', 'making', 'completed', 'cancelled'].includes(request.status)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Yêu cầu tiệc tea break đã được xác nhận hoặc hủy bỏ, không thể chỉnh sửa',
+      });
+    }
+
+    const {
+      fullname,
+      phone,
+      email,
+      packageType,
+      cakeType,
+      groupSize,
+      size,
+      teaOption,
+      flavor,
+      corporateName,
+      mainColor,
+      eventTheme,
+      textOnCake,
+      expectedDate,
+      expectedTime,
+      note,
+    } = req.body;
+
+    if (fullname) request.fullname = fullname;
+    if (phone) request.phone = phone;
+    if (email) request.email = email;
+    
+    if (packageType || cakeType) request.packageType = packageType || cakeType;
+    if (groupSize || size) request.groupSize = groupSize || size;
+    if (teaOption || flavor) request.teaOption = teaOption || flavor;
+    if (corporateName !== undefined || mainColor !== undefined) request.corporateName = corporateName || mainColor;
+    if (eventTheme !== undefined || textOnCake !== undefined) request.eventTheme = eventTheme || textOnCake;
+    
+    if (expectedDate) request.expectedDate = new Date(expectedDate);
+    if (expectedTime) request.expectedTime = expectedTime;
+    if (note !== undefined) request.note = note;
+
+    let file = req.file;
+    if (!file && req.files) {
+      if (req.files['sampleLayout'] && req.files['sampleLayout'][0]) {
+        file = req.files['sampleLayout'][0];
+      } else if (req.files['sampleImage'] && req.files['sampleImage'][0]) {
+        file = req.files['sampleImage'][0];
+      }
+    }
+
+    if (file) {
+      request.sampleLayout = bufferToBase64(file);
+    }
+
+    await request.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Cập nhật yêu cầu tiệc Tea Break thành công!',
+      request,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

@@ -56,6 +56,37 @@ const dashboardRoutes = require('./routes/dashboardRoutes');
 const settingRoutes = require('./routes/settingRoutes');
 const viewRoutes = require('./routes/viewRoutes');
 
+const { protect } = require('./middlewares/authMiddleware');
+const { restrictTo } = require('./middlewares/roleMiddleware');
+const User = require('./models/User');
+
+app.get('/api/staff/customers/search', protect, restrictTo('staff', 'admin'), async (req, res) => {
+  try {
+    const q = req.query.q || '';
+    if (!q) {
+      return res.status(200).json({ success: true, customers: [] });
+    }
+    const searchRegex = new RegExp(q, 'i');
+    const customers = await User.find({
+      role: 'user',
+      $or: [
+        { name: searchRegex },
+        { phone: searchRegex }
+      ]
+    }).limit(10);
+    
+    res.status(200).json({
+      success: true,
+      customers
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
 // Mount API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
@@ -68,6 +99,7 @@ app.use('/api/reviews', reviewRoutes);
 app.use('/api/contacts', contactRoutes);
 app.use('/api/custom-cakes', customCakeRoutes); // compatibility alias
 app.use('/api/teabreak-requests', teaBreakRoutes);
+app.use('/api/tea-break-orders', teaBreakRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/settings', settingRoutes);

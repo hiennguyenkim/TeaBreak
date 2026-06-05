@@ -142,17 +142,17 @@
             </div>
             <div class="form-group">
               <label for="address-ward">Phường / Xã:</label>
-              <input type="text" id="address-ward" class="form-control" placeholder="Phường Bến Nghé" required>
+              <select id="address-ward" class="form-control" required></select>
             </div>
           </div>
           <div class="form-row">
             <div class="form-group">
               <label for="address-district">Quận / Huyện:</label>
-              <input type="text" id="address-district" class="form-control" placeholder="Quận 1" required>
+              <select id="address-district" class="form-control" required></select>
             </div>
             <div class="form-group">
               <label for="address-city">Tỉnh / Thành phố:</label>
-              <input type="text" id="address-city" class="form-control" placeholder="TP. Hồ Chí Minh" required>
+              <select id="address-city" class="form-control" required></select>
             </div>
           </div>
           <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
@@ -188,6 +188,193 @@
     </div>
   </main>
 
+  <!-- Modals -->
+  <!-- Edit Address Modal -->
+  <div id="edit-address-modal" class="admin-modal">
+    <div class="modal-content-card">
+      <div class="modal-header-row">
+        <h3>Chỉnh sửa địa chỉ giao hàng</h3>
+        <button class="modal-close-btn" onclick="closeEditAddressModal()">&times;</button>
+      </div>
+      <form id="address-edit-form">
+        <input type="hidden" id="edit-address-id">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="edit-address-name">Tên người nhận:</label>
+            <input type="text" id="edit-address-name" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-address-phone">Số điện thoại:</label>
+            <input type="tel" id="edit-address-phone" class="form-control" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="edit-address-detail">Địa chỉ chi tiết (Số nhà, tên đường):</label>
+            <input type="text" id="edit-address-detail" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-address-city">Tỉnh / Thành phố:</label>
+            <select id="edit-address-city" class="form-control" required></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="edit-address-district">Quận / Huyện:</label>
+            <select id="edit-address-district" class="form-control" required></select>
+          </div>
+          <div class="form-group">
+            <label for="edit-address-ward">Phường / Xã:</label>
+            <select id="edit-address-ward" class="form-control" required></select>
+          </div>
+        </div>
+        <div class="form-group" style="display: flex; align-items: center; gap: 8px; margin-top: 16px;">
+          <input type="checkbox" id="edit-address-default" style="width: 18px; height: 18px; accent-color: var(--primary);">
+          <label for="edit-address-default" style="margin-bottom: 0; cursor: pointer;">Đặt làm địa chỉ mặc định</label>
+        </div>
+        <div class="modal-footer" style="margin-top: 16px;">
+          <button type="button" class="btn btn-secondary" onclick="closeEditAddressModal()">Hủy</button>
+          <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Order Modal -->
+  <div id="edit-order-modal" class="admin-modal">
+    <div class="modal-content-card">
+      <div class="modal-header-row">
+        <h3>Chỉnh sửa thông tin đơn hàng</h3>
+        <button class="modal-close-btn" onclick="closeEditOrderModal()">&times;</button>
+      </div>
+      <form id="order-edit-form">
+        <input type="hidden" id="edit-order-id">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="edit-order-fullname">Người nhận:</label>
+            <input type="text" id="edit-order-fullname" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-order-phone">Số điện thoại:</label>
+            <input type="tel" id="edit-order-phone" class="form-control" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="edit-order-address">Địa chỉ nhận bánh:</label>
+          <input type="text" id="edit-order-address" class="form-control" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="edit-order-time">Giờ nhận bánh:</label>
+            <input type="time" id="edit-order-time" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-order-note">Ghi chú đơn hàng:</label>
+            <input type="text" id="edit-order-note" class="form-control">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Danh sách sản phẩm và số lượng:</label>
+          <div id="edit-order-items-list" style="margin-top: 10px; max-height: 200px; overflow-y: auto; background-color: var(--gray-100); padding: 12px; border-radius: var(--radius-sm); display: flex; flex-direction: column; gap: 8px;">
+            <!-- Loaded dynamically -->
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeEditOrderModal()">Hủy</button>
+          <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Tea Break Modal -->
+  <div id="edit-teabreak-modal" class="admin-modal">
+    <div class="modal-content-card">
+      <div class="modal-header-row">
+        <h3>Chỉnh sửa yêu cầu Tea Break</h3>
+        <button class="modal-close-btn" onclick="closeEditTeaBreakModal()">&times;</button>
+      </div>
+      <form id="teabreak-edit-form">
+        <input type="hidden" id="edit-teabreak-id">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="edit-tb-fullname">Người liên hệ:</label>
+            <input type="text" id="edit-tb-fullname" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-tb-phone">Số điện thoại:</label>
+            <input type="tel" id="edit-tb-phone" class="form-control" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="edit-tb-email">Email liên hệ:</label>
+            <input type="email" id="edit-tb-email" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-tb-corporate">Doanh nghiệp / Công ty (Tùy chọn):</label>
+            <input type="text" id="edit-tb-corporate" class="form-control">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="edit-tb-package">Loại gói tiệc:</label>
+            <select id="edit-tb-package" class="form-control" required>
+              <option value="Set tiệc ngọt">Set tiệc ngọt</option>
+              <option value="Set tiệc mặn">Set tiệc mặn</option>
+              <option value="Set kết hợp">Set kết hợp</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="edit-tb-groupsize">Quy mô tiệc:</label>
+            <select id="edit-tb-groupsize" class="form-control" required>
+              <option value="10-15 người">10-15 người</option>
+              <option value="20-30 người">20-30 người</option>
+              <option value="50+ người">50+ người</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="edit-tb-tea">Lựa chọn Trà:</label>
+            <select id="edit-tb-tea" class="form-control" required>
+              <option value="Trà Ô long cam đào">Trà Ô long cam đào</option>
+              <option value="Trà Earl Grey">Trà Earl Grey</option>
+              <option value="Trà hoa cúc mật ong">Trà hoa cúc mật ong</option>
+              <option value="Trà hoa hồng thanh mát">Trà hoa hồng thanh mát</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="edit-tb-theme">Chủ đề trang trí (Tùy chọn):</label>
+            <input type="text" id="edit-tb-theme" class="form-control">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="edit-tb-date">Ngày tổ chức:</label>
+            <input type="date" id="edit-tb-date" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-tb-time">Giờ nhận/setup:</label>
+            <input type="time" id="edit-tb-time" class="form-control" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="edit-tb-note">Ghi chú & yêu cầu món ăn:</label>
+          <textarea id="edit-tb-note" class="form-control" rows="2"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="edit-tb-layout">Thay đổi sơ đồ bố trí (Tùy chọn):</label>
+          <input type="file" id="edit-tb-layout" class="form-control" accept="image/*">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeEditTeaBreakModal()">Hủy</button>
+          <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Footer -->
   <footer>
     <div class="container footer-bottom" style="padding-top: 0; border-top: none;">
@@ -196,6 +383,7 @@
   </footer>
 
   <!-- Scripts -->
+  <script src="/public/js/vietnam-regions.js"></script>
   <script src="/public/js/main.js"></script>
   <script src="/public/js/user-dashboard.js"></script>
 </body>

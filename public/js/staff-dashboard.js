@@ -137,9 +137,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     tableBody.innerHTML = orders.map(order => {
-      const itemsList = order.items.map(item => `
-        <div style="font-size: 13px;">${item.name} (${item.size} | ${item.flavor}) x <strong>${item.quantity}</strong></div>
-      `).join('');
+      const itemsList = `<ul style="margin: 0; padding-left: 14px; list-style-type: disc;">` + 
+        order.items.map(item => `
+          <li style="font-size: 13px; margin-bottom: 4px;">${item.name} (${item.size} | ${item.flavor}) x <strong>${item.quantity}</strong></li>
+        `).join('') + `</ul>`;
 
       const dateStr = new Date(order.deliveryDate).toLocaleDateString('vi-VN');
 
@@ -210,63 +211,77 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (e) {}
   };
 
-  // View order detail card modal popup
+  const translateStatus = (status) => {
+    const statuses = {
+      pending: 'Chờ xác nhận',
+      confirmed: 'Đã xác nhận',
+      preparing: 'Đang làm bánh',
+      shipping: 'Đang giao bánh',
+      delivered: 'Đã giao bánh',
+      completed: 'Hoàn thành',
+      cancelled: 'Đã hủy',
+      refunded: 'Đã hoàn tiền',
+    };
+    return statuses[status] || status;
+  };
+
+  // View order detail modal popup
   window.viewOrderDetails = async (orderId) => {
     try {
       const data = await fetchAPI(`/api/orders/${orderId}`);
       if (data.success && data.order) {
         const order = data.order;
         
-        let modal = document.getElementById('order-detail-modal');
-        if (!modal) {
-          modal = document.createElement('div');
-          modal.id = 'order-detail-modal';
-          modal.className = 'admin-modal';
-          document.body.appendChild(modal);
-        }
+        document.getElementById('sd-order-code').textContent = `#${order.orderCode}`;
+        document.getElementById('sd-customer-name').textContent = order.fullname;
+        document.getElementById('sd-customer-phone').textContent = order.phone;
+        document.getElementById('sd-customer-email').textContent = order.email;
+        document.getElementById('sd-customer-address').textContent = order.address;
+        document.getElementById('sd-delivery-date').textContent = new Date(order.deliveryDate).toLocaleDateString('vi-VN');
+        document.getElementById('sd-delivery-time').textContent = order.deliveryTime;
+        document.getElementById('sd-order-note').textContent = order.note || 'Không có';
+        document.getElementById('sd-payment-method').textContent = order.paymentMethod.toUpperCase();
+        document.getElementById('sd-payment-status').textContent = order.paymentStatus === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán';
 
-        modal.innerHTML = `
-          <div class="modal-content-card">
-            <div class="modal-header-row">
-              <h3>Chi Tiết Đơn Hàng #${order.orderCode}</h3>
-              <button class="modal-close-btn" onclick="closeOrderModal()">&times;</button>
+        const itemsEl = document.getElementById('sd-order-items');
+        itemsEl.innerHTML = order.items.map(item => `
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; padding: 6px 0; border-bottom: 1px solid var(--gray-200);">
+            <div>
+              <strong>${item.name}</strong> (${item.size} | ${item.flavor})
+              ${item.note ? `<div style="font-size: 11px; color: var(--gray-600); margin-left: 10px;">✍️ Ghi chú: "${item.note}"</div>` : ''}
             </div>
-            <div style="font-size: 14px;">
-              <p><strong>Khách hàng:</strong> ${order.fullname}</p>
-              <p><strong>SĐT:</strong> ${order.phone} | <strong>Email:</strong> ${order.email}</p>
-              <p><strong>Địa chỉ nhận:</strong> ${order.address}</p>
-              <p><strong>Thời gian nhận bánh:</strong> ${new Date(order.deliveryDate).toLocaleDateString('vi-VN')} vào khoảng ${order.deliveryTime}</p>
-              <p><strong>Phương thức thanh toán:</strong> ${order.paymentMethod.toUpperCase()}</p>
-              <p><strong>Ghi chú từ khách:</strong> ${order.note || 'Không có'}</p>
-              
-              <h4 style="margin-top: 20px; border-bottom: 1px solid var(--gray-200); padding-bottom: 8px;">Danh sách sản phẩm bánh</h4>
-              <div style="margin: 12px 0;">
-                ${order.items.map(item => `
-                  <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                    <div>
-                      <strong>${item.name}</strong> (${item.size} | ${item.flavor})
-                      ${item.note ? `<div style="font-size: 11px; color: var(--gray-600); margin-left: 10px;">✍️ Chữ trên bánh: "${item.note}"</div>` : ''}
-                    </div>
-                    <span>${item.price.toLocaleString('vi-VN')}đ x ${item.quantity}</span>
-                  </div>
-                `).join('')}
-              </div>
-              <div style="text-align: right; font-weight: 700; font-size: 16px; margin-top: 16px;">
-                Tổng tiền gốc: ${order.totalAmount.toLocaleString('vi-VN')}đ<br>
-                Khuyến mãi giảm giá: -${order.discountAmount.toLocaleString('vi-VN')}đ<br>
-                <span style="color: var(--primary-hover); font-size: 18px;">Thực thu: ${order.finalAmount.toLocaleString('vi-VN')}đ</span>
-              </div>
-            </div>
+            <span>${item.price.toLocaleString('vi-VN')}đ x ${item.quantity}</span>
+          </div>
+        `).join('');
+
+        itemsEl.innerHTML += `
+          <div style="text-align: right; font-weight: 700; margin-top: 12px; font-size: 14px; padding-top: 8px; border-top: 1px solid var(--gray-300);">
+            Tạm tính: ${order.totalAmount.toLocaleString('vi-VN')}đ<br>
+            Giảm giá: -${order.discountAmount.toLocaleString('vi-VN')}đ<br>
+            Thực thu: <span style="color: var(--primary-hover); font-size: 16px;">${order.finalAmount.toLocaleString('vi-VN')}đ</span>
           </div>
         `;
-        modal.style.display = 'flex';
+
+        const historyEl = document.getElementById('sd-order-history');
+        if (order.statusHistory && order.statusHistory.length > 0) {
+          historyEl.innerHTML = order.statusHistory.map(h => `
+            <div style="padding: 4px; border-bottom: 1px dashed var(--gray-200);">
+              <strong>${new Date(h.updatedAt).toLocaleString('vi-VN')}</strong>: 
+              Cập nhật sang <span class="oh-status ${h.status}" style="font-size:10px; padding: 2px 4px; border-radius: var(--radius-xs);">${translateStatus(h.status)}</span> 
+              bởi ${h.updatedByName || 'Hệ thống'} (${h.note || 'Không có ghi chú'})
+            </div>
+          `).join('');
+        } else {
+          historyEl.innerHTML = '<div style="color: var(--gray-600); font-style: italic;">Chưa có lịch sử cập nhật.</div>';
+        }
+
+        document.getElementById('staff-order-details-modal').classList.add('active');
       }
     } catch (e) {}
   };
 
-  window.closeOrderModal = () => {
-    const modal = document.getElementById('order-detail-modal');
-    if (modal) modal.style.display = 'none';
+  window.closeStaffOrderDetailModal = () => {
+    document.getElementById('staff-order-details-modal').classList.remove('active');
   };
 
   // Bind order search input
@@ -276,6 +291,71 @@ document.addEventListener('DOMContentLoaded', async () => {
       loadStaffOrders();
     });
   }
+
+  // Customer Autocomplete for manual orders
+  const customerSearchInput = document.getElementById('customer-search-manual');
+  const customerSearchResults = document.getElementById('customer-search-results');
+  let customerSearchTimeout = null;
+
+  if (customerSearchInput && customerSearchResults) {
+    customerSearchInput.addEventListener('input', () => {
+      clearTimeout(customerSearchTimeout);
+      const query = customerSearchInput.value.trim();
+      
+      if (!query) {
+        customerSearchResults.innerHTML = '';
+        customerSearchResults.style.display = 'none';
+        return;
+      }
+
+      customerSearchTimeout = setTimeout(async () => {
+        try {
+          const data = await fetchAPI(`/api/staff/customers/search?q=${encodeURIComponent(query)}`);
+          if (data.success && data.customers && data.customers.length > 0) {
+            customerSearchResults.innerHTML = data.customers.map(c => `
+              <div class="autocomplete-item" 
+                   data-name="${c.name || ''}" 
+                   data-phone="${c.phone || ''}" 
+                   data-email="${c.email || ''}" 
+                   data-address="${c.address || ''}">
+                <div style="font-weight: 700;">${c.name}</div>
+                <div style="font-size: 12px; color: var(--gray-600);">${c.phone} | ${c.email || 'Không có email'}</div>
+              </div>
+            `).join('');
+            customerSearchResults.style.display = 'block';
+
+            // Add click listener to each result
+            customerSearchResults.querySelectorAll('.autocomplete-item').forEach(item => {
+              item.addEventListener('click', () => {
+                document.getElementById('manual-customer-name').value = item.getAttribute('data-name');
+                document.getElementById('manual-customer-phone').value = item.getAttribute('data-phone');
+                document.getElementById('manual-customer-email').value = item.getAttribute('data-email');
+                document.getElementById('manual-customer-address').value = item.getAttribute('data-address');
+                
+                // Clear and hide search dropdown
+                customerSearchResults.innerHTML = '';
+                customerSearchResults.style.display = 'none';
+                customerSearchInput.value = '';
+              });
+            });
+          } else {
+            customerSearchResults.innerHTML = '<div style="padding: 10px 14px; font-size: 13px; color: var(--gray-500); font-style: italic;">Không tìm thấy thành viên phù hợp.</div>';
+            customerSearchResults.style.display = 'block';
+          }
+        } catch (err) {
+          console.error('Lỗi tìm kiếm khách hàng:', err);
+        }
+      }, 300);
+    });
+
+    // Hide dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!customerSearchInput.contains(e.target) && !customerSearchResults.contains(e.target)) {
+        customerSearchResults.style.display = 'none';
+      }
+    });
+  }
+
 
   // ================= TAB: CUSTOM CAKE REQUESTS =================
   const loadCustomCakes = async () => {
