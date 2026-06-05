@@ -139,16 +139,29 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  width: 100%;
 }
 
 .price-range-inputs input {
   flex: 1;
-  padding: 10px 12px;
+  min-width: 0;
+  width: 0;
+  padding: 10px 8px;
   border: 1.5px solid var(--gray-200);
   border-radius: var(--radius-sm);
   font-size: 13px;
   text-align: center;
   transition: var(--transition-fast);
+}
+
+.price-range-inputs input::-webkit-outer-spin-button,
+.price-range-inputs input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.price-range-inputs input[type=number] {
+  -moz-appearance: textfield;
 }
 
 .price-range-inputs input:focus {
