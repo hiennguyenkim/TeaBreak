@@ -43,3 +43,6 @@ const otherProvinces = [
   "Tây Ninh", "Thái Bình", "Thái Nguyên", "Thanh Hóa", "Thừa Thiên Huế", "Tiền Giang", "Trà Vinh", 
   "Tuyên Quang", "Vĩnh Long", "Vĩnh Phục", "Yên Bái"
 ];
+
+window.vietnamRegions = vietnamRegions;
+window.otherProvinces = otherProvinces;

@@ -158,7 +158,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <div style="font-size: 11px; color: var(--gray-600);">${order.deliveryTime}</div>
           </td>
           <td>
-            <select class="form-control" style="padding: 6px; font-size: 12px; width: 130px;" onchange="updateOrderState('${order._id}', this.value)">
+            <select class="form-control" style="padding: 6px; font-size: 12px; width: 115px;" onchange="updateOrderState('${order._id}', this.value)">
               <option value="pending" ${order.orderStatus === 'pending' ? 'selected' : ''}>Chờ xác nhận</option>
               <option value="confirmed" ${order.orderStatus === 'confirmed' ? 'selected' : ''}>Đã xác nhận</option>
               <option value="preparing" ${order.orderStatus === 'preparing' ? 'selected' : ''}>Đang chuẩn bị</option>
@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             </select>
           </td>
           <td>
-            <select class="form-control" style="padding: 6px; font-size: 12px; width: 110px;" onchange="updateOrderPayment('${order._id}', this.value)">
+            <select class="form-control" style="padding: 6px; font-size: 12px; width: 105px;" onchange="updateOrderPayment('${order._id}', this.value)">
               <option value="unpaid" ${order.paymentStatus === 'unpaid' ? 'selected' : ''}>Chưa trả tiền</option>
               <option value="pending_confirm" ${order.paymentStatus === 'pending_confirm' ? 'selected' : ''}>Chờ duyệt CK</option>
               <option value="paid" ${order.paymentStatus === 'paid' ? 'selected' : ''}>Đã thanh toán</option>
@@ -365,7 +365,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     customList.innerHTML = '<div class="text-center">Đang tải các yêu cầu đặt bánh riêng...</div>';
 
     try {
-      const data = await fetchAPI('/api/custom-cakes');
+      const data = await fetchAPI('/api/teabreak-requests');
       if (data.success) {
         renderCustomCakes(data.requests);
       }
@@ -443,7 +443,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     try {
-      const data = await fetchAPI(`/api/custom-cakes/${reqId}/quote`, {
+      const data = await fetchAPI(`/api/teabreak-requests/${reqId}/quote`, {
         method: 'PUT',
         body: JSON.stringify({ quotedPrice: price, note: 'Báo giá bánh thiết kế riêng theo mẫu' }),
       });

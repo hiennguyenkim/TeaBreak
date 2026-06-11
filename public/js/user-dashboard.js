@@ -98,33 +98,27 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   });
 
-  // Sync tab from URL query parameter
-  const urlParams = new URLSearchParams(window.location.search);
-  const targetTab = urlParams.get('tab');
-  if (targetTab && ['tab-profile', 'tab-orders', 'tab-addresses', 'tab-wishlist', 'tab-teabreak'].includes(targetTab)) {
-    switchTab(targetTab);
-  } else {
-    switchTab('tab-profile');
-  }
-
   // Vietnam Administrative Regions Population Dropdowns Helper
   const populateAddressDropdowns = (citySelect, districtSelect, wardSelect, initialData = null) => {
+    const regions = window.vietnamRegions || {};
+    const provinces = window.otherProvinces || [];
+
     citySelect.innerHTML = '<option value="">-- Chọn Tỉnh/Thành phố --</option>';
     
     // Major cities
-    const majorCities = Object.keys(vietnamRegions);
+    const majorCities = Object.keys(regions);
     majorCities.forEach(city => {
       citySelect.innerHTML += `<option value="${city}">${city}</option>`;
     });
     
     // Other provinces
-    otherProvinces.forEach(prov => {
+    provinces.forEach(prov => {
       citySelect.innerHTML += `<option value="${prov}">${prov}</option>`;
     });
 
     const handleCityChange = () => {
       const selectedCity = citySelect.value;
-      if (vietnamRegions[selectedCity]) {
+      if (regions[selectedCity]) {
         // Swap inputs back to select if they were inputs
         if (districtSelect.tagName === 'INPUT') {
           const newSelect = document.createElement('select');
@@ -145,7 +139,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         districtSelect.innerHTML = '<option value="">-- Chọn Quận/Huyện --</option>';
-        Object.keys(vietnamRegions[selectedCity]).forEach(dist => {
+        Object.keys(regions[selectedCity]).forEach(dist => {
           districtSelect.innerHTML += `<option value="${dist}">${dist}</option>`;
         });
         wardSelect.innerHTML = '<option value="">-- Chọn Phường/Xã --</option>';
@@ -180,9 +174,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const handleDistrictChange = () => {
       const selectedCity = citySelect.value;
       const selectedDistrict = districtSelect.value;
-      if (vietnamRegions[selectedCity] && vietnamRegions[selectedCity][selectedDistrict] && wardSelect.tagName === 'SELECT') {
+      if (regions[selectedCity] && regions[selectedCity][selectedDistrict] && wardSelect.tagName === 'SELECT') {
         wardSelect.innerHTML = '<option value="">-- Chọn Phường/Xã --</option>';
-        vietnamRegions[selectedCity][selectedDistrict].forEach(w => {
+        regions[selectedCity][selectedDistrict].forEach(w => {
           wardSelect.innerHTML += `<option value="${w}">${w}</option>`;
         });
       }
@@ -980,5 +974,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
       } catch (err) {}
     });
+  }
+
+  // Sync tab from URL query parameter at the very end of DOMContentLoaded to ensure all tab loaders are initialized
+  const urlParams = new URLSearchParams(window.location.search);
+  const targetTab = urlParams.get('tab');
+  if (targetTab && ['tab-profile', 'tab-orders', 'tab-addresses', 'tab-wishlist', 'tab-teabreak'].includes(targetTab)) {
+    switchTab(targetTab);
+  } else {
+    switchTab('tab-profile');
   }
 });

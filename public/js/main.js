@@ -435,6 +435,7 @@ const loadGlobalSettings = async () => {
       const isImg = settings.logoIcon && (
         settings.logoIcon.startsWith('/') ||
         settings.logoIcon.startsWith('http') ||
+        settings.logoIcon.startsWith('data:image/') ||
         settings.logoIcon.match(/\.(png|jpg|jpeg|gif|svg|webp)/i)
       );
       
@@ -479,6 +480,7 @@ const loadGlobalSettings = async () => {
                 <li><a href="/teabreak.html">Corporate Orders</a></li>
                 <li><a href="/teabreak.html">Tea Break Packages</a></li>
                 <li><a href="/products.html?category=mini-cake">Mini Cake nhỏ xinh</a></li>
+                <li><a href="/products.html?search=Tiramisu">Tiramisu cao cấp</a></li>
               </ul>
             </div>
             <div class="footer-col">

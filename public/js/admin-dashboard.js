@@ -452,9 +452,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     tableBody.innerHTML = users.map(u => {
-      const roleBadge = u.role === 'admin' ? '<span class="badge" style="background-color: var(--primary-light); color: var(--primary-hover); font-weight: bold;">Admin</span>' :
-                         u.role === 'staff' ? '<span class="badge" style="background-color: #e3f2fd; color: #1e88e5;">Staff</span>' :
-                         '<span class="badge" style="background-color: #f1f1f1; color: #666;">Khách hàng</span>';
+      const roleBadge = u.role === 'admin' ? '<span class="role-badge" style="background-color: var(--primary-light); color: var(--primary-hover); font-weight: bold; padding: 4px 8px; border-radius: 4px; font-size: 13px; display: inline-block;">Admin</span>' :
+                         u.role === 'staff' ? '<span class="role-badge" style="background-color: #e3f2fd; color: #1e88e5; padding: 4px 8px; border-radius: 4px; font-size: 13px; display: inline-block;">Staff</span>' :
+                         '<span class="role-badge" style="background-color: #f1f1f1; color: #666; padding: 4px 8px; border-radius: 4px; font-size: 13px; display: inline-block;">Khách hàng</span>';
       
       const statusText = u.status === 'active' ? 'Hoạt động' : 'Đã khóa';
       const statusClass = u.status === 'active' ? 'active' : 'blocked';
@@ -471,9 +471,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       return `
         <tr>
-          <td style="display: flex; align-items: center; min-height: 48px;">
-            ${avatarHtml}
-            <strong>${u.name}</strong>
+          <td>
+            <div style="display: flex; align-items: center; min-height: 36px;">
+              ${avatarHtml}
+              <strong>${u.name}</strong>
+            </div>
           </td>
           <td><code>${u.email}</code></td>
           <td>${u.phone}</td>

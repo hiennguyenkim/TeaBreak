@@ -30,7 +30,6 @@ const {
 app.use(preventNoSqlInjection);
 app.use(preventXss);
 app.use(csrfGuard);
-app.use(rateLimiter);
 
 // Static folders
 app.use('/public', express.static(path.join(__dirname, 'public')));
@@ -345,17 +344,5 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`\n================================================================`);
-  console.log(`  🚀 SWEET PINK BAKERY & TEA BREAK SERVER RUNNING`);
-  console.log(`  🔗 Local URL: http://localhost:${PORT}`);
-  console.log(`================================================================`);
-  console.log(`  👤 TÀI KHOẢN KHÁCH HÀNG (CUSTOMER):`);
-  console.log(`     Email: user@gmail.com | Password: user123`);
-  console.log(`  --------------------------------------------------------------`);
-  console.log(`  🧑‍🍳 TÀI KHOẢN NHÂN VIÊN (STAFF):`);
-  console.log(`     Email: staff@gmail.com | Password: staff123`);
-  console.log(`  --------------------------------------------------------------`);
-  console.log(`  👑 TÀI KHOẢN QUẢN TRỊ VIÊN (ADMIN):`);
-  console.log(`     Email: admin@gmail.com | Password: admin123`);
-  console.log(`================================================================\n`);
+  console.log(`http://localhost:${PORT}`);
 });

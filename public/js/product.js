@@ -7,6 +7,13 @@ document.addEventListener('DOMContentLoaded', () => {
   if (productGrid) {
     let currentPage = 1;
     let currentCategory = new URLSearchParams(window.location.search).get('category') || '';
+    const currentSearch = new URLSearchParams(window.location.search).get('search') || '';
+
+    // Pre-fill search input if present in URL query
+    const searchInputEl = document.getElementById('search-input');
+    if (searchInputEl && currentSearch) {
+      searchInputEl.value = currentSearch;
+    }
 
     // Main fetch products function
     const loadProducts = async () => {
@@ -150,12 +157,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Category checkboxes mutual exclusivity and URL sync
     const categoryCheckboxes = document.querySelectorAll('input[name="category"]');
     categoryCheckboxes.forEach(cb => {
-      // Sync initial state from currentCategory variable
-      if (cb.value === currentCategory) {
-        cb.checked = true;
-      } else if (cb.value !== "" && currentCategory === "") {
-        cb.checked = false;
-      }
+      // Sync initial state from currentCategory — simple equality:
+      // All checkbox (value="") is checked when currentCategory is empty,
+      // specific category checkbox is checked when its value matches.
+      cb.checked = (cb.value === currentCategory);
 
       cb.addEventListener('click', (e) => {
         // Uncheck all other category checkboxes
@@ -202,6 +207,13 @@ document.addEventListener('DOMContentLoaded', () => {
         currentPage = 1;
         debouncedLoadProducts();
       });
+
+      // Price range inputs: also fire on 'input' (every keystroke, with debounce)
+      // so the filter responds immediately as user types instead of only on blur.
+      const priceMinEl = document.getElementById('price-min');
+      const priceMaxEl = document.getElementById('price-max');
+      if (priceMinEl) priceMinEl.addEventListener('input', () => { currentPage = 1; debouncedLoadProducts(); });
+      if (priceMaxEl) priceMaxEl.addEventListener('input', () => { currentPage = 1; debouncedLoadProducts(); });
     }
 
     // Load initial
