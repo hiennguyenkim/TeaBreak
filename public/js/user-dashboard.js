@@ -74,7 +74,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   const tabMenuItems = document.querySelectorAll('.dashboard-menu-item');
   const tabPanels = document.querySelectorAll('.dashboard-tab-panel');
 
+  let dbChatInterval = null;
+  let dbAdminId = '';
+  let dashboardUser = null;
+
   const switchTab = (tabId) => {
+    // Clear chat polling interval if navigating away from tab-messages
+    if (dbChatInterval && tabId !== 'tab-messages') {
+      clearInterval(dbChatInterval);
+      dbChatInterval = null;
+    }
+
     tabMenuItems.forEach(item => {
       item.classList.remove('active');
       if (item.dataset.tab === tabId) item.classList.add('active');
@@ -90,6 +100,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (tabId === 'tab-addresses') loadAddressBook();
     if (tabId === 'tab-wishlist') loadWishlist();
     if (tabId === 'tab-teabreak') loadTeaBreakRequests();
+    if (tabId === 'tab-messages') loadSupportChat();
   };
 
   tabMenuItems.forEach(item => {
@@ -241,17 +252,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
       }
 
-      const phoneInput = document.getElementById('profile-phone');
-      hideFieldError(phoneInput);
-      const phoneRegex = /^0\d{8}$|^0\d{10}$/;
-      if (phone && !phoneRegex.test(phone)) {
-        showFieldError(phoneInput, 'Số điện thoại bắt đầu bằng số 0, gồm 9 hoặc 11 chữ số');
+      const cleanPhone = phone.replace(/[\s\.\-\(\)]/g, '');
+      const phoneRegex = /^(0|84|\+84)((3|5|7|8|9)[0-9]{8}|2[0-9]{9})$/;
+      if (phone && !phoneRegex.test(cleanPhone)) {
+        showFieldError(phoneInput, 'Số điện thoại không đúng định dạng Việt Nam (ví dụ: 0988888888)');
         return;
       }
 
       const formData = new FormData();
       formData.append('name', name);
-      formData.append('phone', phone);
+      formData.append('phone', cleanPhone);
       formData.append('address', address);
       if (fileInput && fileInput.files.length > 0) {
         formData.append('avatarFile', fileInput.files[0]);
@@ -446,9 +456,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       const phoneInput = document.getElementById('edit-order-phone');
       hideFieldError(phoneInput);
-      const phoneRegex = /^0\d{8}$|^0\d{10}$/;
-      if (phone && !phoneRegex.test(phone)) {
-        showFieldError(phoneInput, 'Số điện thoại bắt đầu bằng số 0, gồm 9 hoặc 11 chữ số');
+      const cleanPhone = phone.replace(/[\s\.\-\(\)]/g, '');
+      const phoneRegex = /^(0|84|\+84)((3|5|7|8|9)[0-9]{8}|2[0-9]{9})$/;
+      if (phone && !phoneRegex.test(cleanPhone)) {
+        showFieldError(phoneInput, 'Số điện thoại không đúng định dạng Việt Nam (ví dụ: 0988888888)');
         return;
       }
 
@@ -465,7 +476,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       try {
         const data = await fetchAPI(`/api/orders/${orderId}`, {
           method: 'PUT',
-          body: JSON.stringify({ fullname, phone, address, deliveryTime, note, items })
+          body: JSON.stringify({ fullname, phone: cleanPhone, address, deliveryTime, note, items })
         });
         if (data.success) {
           showToast(data.message, 'success');
@@ -559,16 +570,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       const phoneInput = document.getElementById('address-phone');
       hideFieldError(phoneInput);
-      const phoneRegex = /^0\d{8}$|^0\d{10}$/;
-      if (phone && !phoneRegex.test(phone)) {
-        showFieldError(phoneInput, 'Số điện thoại bắt đầu bằng số 0, gồm 9 hoặc 11 chữ số');
+      const cleanPhone = phone.replace(/[\s\.\-\(\)]/g, '');
+      const phoneRegex = /^(0|84|\+84)((3|5|7|8|9)[0-9]{8}|2[0-9]{9})$/;
+      if (phone && !phoneRegex.test(cleanPhone)) {
+        showFieldError(phoneInput, 'Số điện thoại không đúng định dạng Việt Nam (ví dụ: 0988888888)');
         return;
       }
 
       try {
         const data = await fetchAPI('/api/users/addresses', {
           method: 'POST',
-          body: JSON.stringify({ receiverName, phone, addressDetail, ward, district, city, isDefault }),
+          body: JSON.stringify({ receiverName, phone: cleanPhone, addressDetail, ward, district, city, isDefault }),
         });
 
         if (data.success) {
@@ -630,16 +642,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       const phoneInput = document.getElementById('edit-address-phone');
       hideFieldError(phoneInput);
-      const phoneRegex = /^0\d{8}$|^0\d{10}$/;
-      if (phone && !phoneRegex.test(phone)) {
-        showFieldError(phoneInput, 'Số điện thoại bắt đầu bằng số 0, gồm 9 hoặc 11 chữ số');
+      const cleanPhone = phone.replace(/[\s\.\-\(\)]/g, '');
+      const phoneRegex = /^(0|84|\+84)((3|5|7|8|9)[0-9]{8}|2[0-9]{9})$/;
+      if (phone && !phoneRegex.test(cleanPhone)) {
+        showFieldError(phoneInput, 'Số điện thoại không đúng định dạng Việt Nam (ví dụ: 0988888888)');
         return;
       }
 
       try {
         const data = await fetchAPI(`/api/users/addresses/${addressId}`, {
           method: 'PUT',
-          body: JSON.stringify({ receiverName, phone, addressDetail, ward, district, city, isDefault }),
+          body: JSON.stringify({ receiverName, phone: cleanPhone, addressDetail, ward, district, city, isDefault }),
         });
 
         if (data.success) {
@@ -938,15 +951,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       const phoneInput = document.getElementById('edit-tb-phone');
       hideFieldError(phoneInput);
-      const phoneRegex = /^0\d{8}$|^0\d{10}$/;
-      if (phone && !phoneRegex.test(phone)) {
-        showFieldError(phoneInput, 'Số điện thoại bắt đầu bằng số 0, gồm 9 hoặc 11 chữ số');
+      const cleanPhone = phone.replace(/[\s\.\-\(\)]/g, '');
+      const phoneRegex = /^(0|84|\+84)((3|5|7|8|9)[0-9]{8}|2[0-9]{9})$/;
+      if (phone && !phoneRegex.test(cleanPhone)) {
+        showFieldError(phoneInput, 'Số điện thoại không đúng định dạng Việt Nam (ví dụ: 0988888888)');
         return;
       }
 
       const formData = new FormData();
       formData.append('fullname', fullname);
-      formData.append('phone', phone);
+      formData.append('phone', cleanPhone);
       formData.append('email', email);
       formData.append('corporateName', corporateName);
       formData.append('packageType', packageType);
@@ -976,10 +990,106 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  // ================= TAB: SUPPORT CHAT WORKSPACE =================
+  const loadSupportChat = async () => {
+    const messagesBox = document.getElementById('db-chat-messages');
+    if (!messagesBox) return;
+
+    // Fetch user details if not cached yet
+    if (!dashboardUser) {
+      try {
+        const meRes = await fetchAPI('/api/auth/me', { silent: true });
+        if (meRes.success && meRes.user) {
+          dashboardUser = meRes.user;
+        }
+      } catch (e) {
+        messagesBox.innerHTML = '<div style="text-align: center; color: var(--danger); font-size: 13px; padding: 24px;">Không thể xác thực người dùng.</div>';
+        return;
+      }
+    }
+
+    if (!dbAdminId) {
+      messagesBox.innerHTML = '<div style="text-align: center; color: var(--gray-600); padding: 24px;">Đang kết nối tới bộ phận hỗ trợ...</div>';
+      try {
+        const res = await fetchAPI('/api/messages/support/recipient', { silent: true });
+        if (res.success && res.recipient) {
+          dbAdminId = res.recipient._id;
+        }
+      } catch (e) {
+        messagesBox.innerHTML = '<div style="text-align: center; color: var(--danger); font-size: 13px; padding: 24px;">Không thể kết nối bộ phận hỗ trợ.</div>';
+        return;
+      }
+    }
+
+    const loadDbMessages = async () => {
+      try {
+        const res = await fetchAPI(`/api/messages/${dbAdminId}`, { silent: true });
+        if (res.success && res.messages) {
+          if (res.messages.length === 0) {
+            messagesBox.innerHTML = '<div style="text-align: center; color: var(--gray-600); padding: 24px; font-size: 13px; margin: auto;">Gửi tin nhắn để bắt đầu cuộc trò chuyện với tiệm bánh!</div>';
+          } else {
+            const myId = (dashboardUser.id || dashboardUser._id || '').toString();
+            messagesBox.innerHTML = res.messages.map(msg => {
+              const senderIdStr = (msg.senderId._id || msg.senderId || '').toString();
+              const alignClass = senderIdStr === myId ? 'sent' : 'received';
+              return `<div class="support-chat-msg ${alignClass}">${msg.content}</div>`;
+            }).join('');
+            messagesBox.scrollTop = messagesBox.scrollHeight;
+          }
+        }
+      } catch (e) {}
+    };
+
+    // Load immediately, then setup interval if not already running
+    await loadDbMessages();
+
+    if (!dbChatInterval) {
+      dbChatInterval = setInterval(loadDbMessages, 5000);
+    }
+  };
+
+  const sendDbMessage = async () => {
+    const inputEl = document.getElementById('db-chat-input');
+    if (!inputEl) return;
+    const content = inputEl.value.trim();
+    if (!content || !dbAdminId) return;
+
+    try {
+      const res = await fetchAPI('/api/messages', {
+        method: 'POST',
+        body: JSON.stringify({ receiverId: dbAdminId, content }),
+        silent: true
+      });
+      if (res.success) {
+        inputEl.value = '';
+        const messagesBox = document.getElementById('db-chat-messages');
+        if (messagesBox) {
+          // Immediately append sent bubble to UI to make it feel responsive
+          const tempMsgEl = document.createElement('div');
+          tempMsgEl.className = 'support-chat-msg sent';
+          tempMsgEl.textContent = content;
+          messagesBox.appendChild(tempMsgEl);
+          messagesBox.scrollTop = messagesBox.scrollHeight;
+        }
+        // Also trigger full load to ensure sync
+        loadSupportChat();
+      }
+    } catch (e) {}
+  };
+
+  const dbChatSendBtn = document.getElementById('db-chat-send');
+  const dbChatInput = document.getElementById('db-chat-input');
+  if (dbChatSendBtn && dbChatInput) {
+    dbChatSendBtn.addEventListener('click', sendDbMessage);
+    dbChatInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendDbMessage();
+    });
+  }
+
   // Sync tab from URL query parameter at the very end of DOMContentLoaded to ensure all tab loaders are initialized
   const urlParams = new URLSearchParams(window.location.search);
   const targetTab = urlParams.get('tab');
-  if (targetTab && ['tab-profile', 'tab-orders', 'tab-addresses', 'tab-wishlist', 'tab-teabreak'].includes(targetTab)) {
+  if (targetTab && ['tab-profile', 'tab-orders', 'tab-addresses', 'tab-wishlist', 'tab-teabreak', 'tab-messages'].includes(targetTab)) {
     switchTab(targetTab);
   } else {
     switchTab('tab-profile');

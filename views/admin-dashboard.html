@@ -114,9 +114,18 @@
           </div>
         </div>
 
-        <h3 class="tab-title">Sản phẩm bánh bán chạy nhất</h3>
-        <div class="card" id="bestsellers-list">
-          <!-- Loaded dynamically -->
+        <h3 class="tab-title">THỐNG KÊ SẢN PHẨM</h3>
+        <div class="card" style="margin-bottom: 24px; padding: 20px;">
+          <div class="form-group" style="margin-bottom: 0; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+            <label for="stat-product-select" style="font-weight: 600; color: var(--gray-800); white-space: nowrap; margin-bottom: 0;">Chọn sản phẩm bánh:</label>
+            <select id="stat-product-select" class="form-control" style="max-width: 360px; padding: 8px 12px;">
+              <option value="">-- Đang tải danh sách sản phẩm... --</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="product-stats-container" style="display: none; margin-bottom: 30px;">
+          <!-- Loaded dynamically via JS -->
         </div>
       </section>
 

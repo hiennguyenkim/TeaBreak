@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Order = require('../models/Order');
 const Product = require('../models/Product');
 const Category = require('../models/Category');
@@ -251,3 +252,76 @@ exports.getRevenueReport = async (req, res) => {
     });
   }
 };
+
+// @desc    Get report for a specific product
+// @route   GET /api/dashboard/product-report/:productId
+// @access  Private (Admin only)
+exports.getProductReport = async (req, res) => {
+  try {
+    const { productId } = req.params;
+    
+    // Find the product details
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: 'Không tìm thấy sản phẩm bánh này',
+      });
+    }
+
+    // Aggregate total sold quantity and total sales in completed orders
+    const statsObj = await Order.aggregate([
+      { $match: { orderStatus: 'completed' } },
+      { $unwind: '$items' },
+      { $match: { 'items.productId': new mongoose.Types.ObjectId(productId) } },
+      {
+        $group: {
+          _id: '$items.productId',
+          soldQuantity: { $sum: '$items.quantity' },
+          totalSales: { $sum: { $multiply: ['$items.price', '$items.quantity'] } },
+          ordersCount: { $sum: 1 }
+        }
+      }
+    ]);
+
+    const stats = {
+      soldQuantity: statsObj[0]?.soldQuantity || 0,
+      totalSales: statsObj[0]?.totalSales || 0,
+      ordersCount: statsObj[0]?.ordersCount || 0
+    };
+
+    // Get recent 10 orders containing this product
+    const recentOrders = await Order.find({
+      'items.productId': productId
+    })
+    .sort({ createdAt: -1 })
+    .limit(10)
+    .select('orderCode fullname createdAt items orderStatus finalAmount');
+
+    // Filter down to the matching item details for response
+    const formattedOrders = recentOrders.map(order => {
+      const matchItem = order.items.find(item => item.productId.toString() === productId);
+      return {
+        orderCode: order.orderCode,
+        fullname: order.fullname,
+        createdAt: order.createdAt,
+        quantity: matchItem ? matchItem.quantity : 0,
+        price: matchItem ? matchItem.price : 0,
+        orderStatus: order.orderStatus
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      product,
+      stats,
+      recentOrders: formattedOrders
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+

@@ -257,7 +257,9 @@ const initSupportChatWidget = (currentUser) => {
               messagesBox.innerHTML = '<div style="text-align: center; color: var(--gray-600); margin: auto; padding: 24px; font-size: 13px;">Gửi tin nhắn để bắt đầu cuộc trò chuyện với tiệm bánh!</div>';
             } else {
               messagesBox.innerHTML = res.messages.map(msg => {
-                const alignClass = msg.senderId === currentUser.id ? 'sent' : 'received';
+                const myId = (currentUser.id || currentUser._id || '').toString();
+                const senderIdStr = (msg.senderId._id || msg.senderId || '').toString();
+                const alignClass = senderIdStr === myId ? 'sent' : 'received';
                 return `<div class="support-chat-msg ${alignClass}">${msg.content}</div>`;
               }).join('');
               messagesBox.scrollTop = messagesBox.scrollHeight;

@@ -203,9 +203,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const phoneInput = document.getElementById('checkout-phone');
       hideFieldError(phoneInput);
-      const phoneRegex = /^0\d{8}$|^0\d{10}$/;
-      if (phone && !phoneRegex.test(phone)) {
-        showFieldError(phoneInput, 'Số điện thoại bắt đầu bằng số 0, gồm 9 hoặc 11 chữ số');
+      const cleanPhone = phone.replace(/[\s\.\-\(\)]/g, '');
+      const phoneRegex = /^(0|84|\+84)((3|5|7|8|9)[0-9]{8}|2[0-9]{9})$/;
+      if (phone && !phoneRegex.test(cleanPhone)) {
+        showFieldError(phoneInput, 'Số điện thoại không đúng định dạng Việt Nam (ví dụ: 0988888888)');
         return;
       }
 
@@ -216,7 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const bodyData = {
         fullname,
-        phone,
+        phone: cleanPhone,
         email,
         address,
         deliveryDate,

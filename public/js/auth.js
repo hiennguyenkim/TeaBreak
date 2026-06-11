@@ -67,8 +67,9 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      const phoneRegex = /^(0|84|\+84)(3|5|7|8|9)[0-9]{8}$/;
-      if (!phoneRegex.test(phone.trim())) {
+      const cleanPhone = phone.replace(/[\s\.\-\(\)]/g, '');
+      const phoneRegex = /^(0|84|\+84)((3|5|7|8|9)[0-9]{8}|2[0-9]{9})$/;
+      if (!phoneRegex.test(cleanPhone)) {
         showToast('Số điện thoại không đúng định dạng Việt Nam (ví dụ: 0988888888)!', 'warning');
         return;
       }
@@ -86,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         const data = await fetchAPI('/api/auth/register', {
           method: 'POST',
-          body: JSON.stringify({ name, email, phone, password, address }),
+          body: JSON.stringify({ name, email, phone: cleanPhone, password, address }),
         });
 
         if (data.success) {

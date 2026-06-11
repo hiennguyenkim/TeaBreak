@@ -14,9 +14,10 @@ const teaBreakRequestSchema = new mongoose.Schema(
     phone: {
       type: String,
       required: [true, 'Số điện thoại không được bỏ trống'],
+      set: val => val ? val.replace(/[\s\.\-\(\)]/g, '') : val,
       match: [
-        /^0\d{8}$|^0\d{10}$/,
-        'Số điện thoại bắt đầu bằng số 0, tổng độ dài 9 hoặc 11 ký tự',
+        /^(0|84|\+84)((3|5|7|8|9)[0-9]{8}|2[0-9]{9})$/,
+        'Số điện thoại không đúng định dạng Việt Nam (ví dụ: 0988888888)',
       ],
     },
     email: {

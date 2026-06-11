@@ -39,6 +39,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const tabMenuItems = document.querySelectorAll('.dashboard-menu-item');
   const tabPanels = document.querySelectorAll('.dashboard-tab-panel');
 
+  let productStatsInitialized = false;
+
   const switchTab = (tabId) => {
     tabMenuItems.forEach(item => {
       item.classList.remove('active');
@@ -54,6 +56,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (tabId === 'tab-stats') {
       loadAdminSummary();
       loadAdminAnalytics();
+      if (!productStatsInitialized) {
+        initProductStats();
+        productStatsInitialized = true;
+      }
     }
     if (tabId === 'tab-products') loadAdminProducts();
     if (tabId === 'tab-categories') loadAdminCategories();
@@ -83,26 +89,156 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('stat-today-revenue').textContent = data.stats.todayRevenue.toLocaleString() + 'đ';
         document.getElementById('stat-month-revenue').textContent = data.stats.thisMonthRevenue.toLocaleString() + 'đ';
 
-        // Render best sellers list
-        const bestList = document.getElementById('bestsellers-list');
-        if (bestList) {
-          if (data.bestSellers.length === 0) {
-            bestList.innerHTML = '<div style="color: var(--gray-600); font-style: italic;">Chưa có dữ liệu bán hàng.</div>';
-          } else {
-            bestList.innerHTML = data.bestSellers.map(bs => `
-              <div class="bestseller-item">
-                <div>
-                  <div class="bs-name">${bs.name}</div>
-                  <div class="bs-stats">Đã bán: <strong>${bs.soldQuantity} cái</strong></div>
-                </div>
-                <div class="bs-amount">${bs.totalSales.toLocaleString()}đ</div>
-              </div>
-            `).join('');
-          }
-        }
       }
     } catch (e) {}
   };
+
+  const loadProductStats = async (productId) => {
+    const container = document.getElementById('product-stats-container');
+    if (!container) return;
+
+    container.innerHTML = '<div class="card" style="padding: 24px; text-align: center;"><div class="spinner" style="margin: 0 auto 12px; width: 32px; height: 32px; border: 4px solid var(--gray-200); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite;"></div> Đang tải thống kê sản phẩm...</div>';
+    container.style.display = 'block';
+
+    try {
+      const data = await fetchAPI(`/api/dashboard/product-report/${productId}`);
+      if (data.success) {
+        const { product, stats, recentOrders } = data;
+        
+        let ordersHtml = '';
+        if (recentOrders.length === 0) {
+          ordersHtml = '<tr><td colspan="6" class="text-center" style="color: var(--gray-600); font-style: italic; padding: 20px;">Chưa có đơn hàng nào chứa sản phẩm này.</td></tr>';
+        } else {
+          ordersHtml = recentOrders.map(o => {
+            let statusText = '';
+            let statusStyle = '';
+            if (o.orderStatus === 'pending') { statusText = 'Chờ duyệt'; statusStyle = 'background: hsl(38, 100%, 92%); color: hsl(38, 95%, 35%);'; }
+            else if (o.orderStatus === 'confirmed') { statusText = 'Đã xác nhận'; statusStyle = 'background: hsl(210, 80%, 92%); color: hsl(210, 80%, 30%);'; }
+            else if (o.orderStatus === 'preparing') { statusText = 'Đang làm bánh'; statusStyle = 'background: hsl(35, 100%, 92%); color: hsl(35, 80%, 30%);'; }
+            else if (o.orderStatus === 'shipping') { statusText = 'Đang giao'; statusStyle = 'background: hsl(271, 60%, 92%); color: hsl(271, 60%, 30%);'; }
+            else if (o.orderStatus === 'delivered' || o.orderStatus === 'completed') { statusText = 'Hoàn thành'; statusStyle = 'background: hsl(158, 64%, 90%); color: hsl(158, 64%, 25%);'; }
+            else { statusText = 'Đã hủy'; statusStyle = 'background: hsl(0, 72%, 92%); color: hsl(0, 72%, 30%);'; }
+
+            return `
+              <tr>
+                <td style="font-weight: 700;">#${o.orderCode}</td>
+                <td>${new Date(o.createdAt).toLocaleDateString('vi-VN')}</td>
+                <td>${o.fullname}</td>
+                <td class="text-center" style="font-weight: 600;">${o.quantity} cái</td>
+                <td class="text-right" style="font-weight: 600; color: var(--primary-hover);">${o.price.toLocaleString()}đ</td>
+                <td class="text-center"><span style="display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; ${statusStyle}">${statusText}</span></td>
+              </tr>
+            `;
+          }).join('');
+        }
+
+        let statusBadgeHtml = '';
+        if (product.status === 'available') {
+          statusBadgeHtml = '<span style="display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; background: hsl(158, 64%, 90%); color: hsl(158, 64%, 25%);">Đang bán</span>';
+        } else if (product.status === 'hidden') {
+          statusBadgeHtml = '<span style="display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; background: hsl(0, 0%, 90%); color: hsl(0, 0%, 30%);">Đã ẩn</span>';
+        } else {
+          statusBadgeHtml = '<span style="display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; background: hsl(0, 72%, 92%); color: hsl(0, 72%, 30%);">Hết hàng</span>';
+        }
+
+        container.innerHTML = `
+          <div style="display: grid; grid-template-columns: 280px 1fr; gap: 24px; align-items: start;">
+            <!-- Left product profile card -->
+            <div class="card" style="padding: 20px; text-align: center;">
+              <img src="${product.image || '/public/img/no-image.png'}" alt="${product.name}" style="width: 100%; height: 180px; object-fit: cover; border-radius: var(--radius-md); margin-bottom: 16px; border: 1px solid var(--gray-200);">
+              <h4 style="margin-bottom: 8px; font-family: var(--font-title); font-weight: 700; font-size: 18px; color: var(--dark);">${product.name}</h4>
+              <div style="font-size: 13px; color: var(--gray-500); margin-bottom: 12px;">Mã bánh: <strong style="color: var(--dark);">${product.code}</strong></div>
+              <div style="margin-bottom: 12px;">${statusBadgeHtml}</div>
+              <div style="border-top: 1px dashed var(--gray-200); padding-top: 12px; margin-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div>
+                  <div style="font-size: 11px; color: var(--gray-500);">Đơn giá</div>
+                  <strong style="color: var(--primary-hover); font-size: 14px;">${(product.discountPrice || product.price).toLocaleString()}đ</strong>
+                </div>
+                <div>
+                  <div style="font-size: 11px; color: var(--gray-500);">Tồn kho</div>
+                  <strong style="font-size: 14px; color: var(--dark);">${product.stock} cái</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right stats metrics and order history -->
+            <div style="display: flex; flex-direction: column; gap: 24px; min-width: 0;">
+              <!-- 3 metrics rows -->
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+                <div class="card" style="padding: 16px; border-left: 4px solid var(--primary);">
+                  <div style="font-size: 13px; color: var(--gray-500); margin-bottom: 4px;">Số lượng đã bán</div>
+                  <strong style="font-size: 24px; color: var(--dark); font-family: var(--font-title);">${stats.soldQuantity} <span style="font-size: 14px; font-weight: 500;">cái</span></strong>
+                </div>
+                <div class="card" style="padding: 16px; border-left: 4px solid var(--success);">
+                  <div style="font-size: 13px; color: var(--gray-500); margin-bottom: 4px;">Doanh thu mang lại</div>
+                  <strong style="font-size: 24px; color: var(--success); font-family: var(--font-title);">${stats.totalSales.toLocaleString()}đ</strong>
+                </div>
+                <div class="card" style="padding: 16px; border-left: 4px solid var(--info);">
+                  <div style="font-size: 13px; color: var(--gray-500); margin-bottom: 4px;">Số lượt đặt hàng</div>
+                  <strong style="font-size: 24px; color: var(--info); font-family: var(--font-title);">${stats.ordersCount} <span style="font-size: 14px; font-weight: 500;">đơn</span></strong>
+                </div>
+              </div>
+
+              <!-- Recent order history -->
+              <div class="card" style="padding: 0; overflow: hidden; min-width: 0;">
+                <div style="padding: 16px 20px; border-bottom: 1px solid var(--gray-200); background: var(--gray-100);">
+                  <h4 style="margin: 0; font-size: 15px; font-weight: 700; color: var(--dark);">Đơn đặt hàng gần đây chứa sản phẩm</h4>
+                </div>
+                <div class="data-table-wrapper" style="box-shadow: none; overflow-x: auto;">
+                  <table class="data-table" style="width: 100%;">
+                    <thead>
+                      <tr>
+                        <th>Mã đơn</th>
+                        <th>Ngày đặt</th>
+                        <th>Khách hàng</th>
+                        <th class="text-center">Số lượng</th>
+                        <th class="text-right">Đơn giá mua</th>
+                        <th class="text-center">Trạng thái đơn</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${ordersHtml}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+    } catch (e) {
+      container.innerHTML = '<div class="card" style="padding: 24px; text-align: center; color: var(--danger);">Không thể tải thống kê sản phẩm.</div>';
+    }
+  };
+
+  const initProductStats = async () => {
+    const select = document.getElementById('stat-product-select');
+    if (!select) return;
+
+    try {
+      const data = await fetchAPI('/api/products?limit=200');
+      if (data.success) {
+        select.innerHTML = '<option value="">-- Chọn sản phẩm bánh --</option>' + data.products.map(p => `
+          <option value="${p._id}">${p.name} (${p.code})</option>
+        `).join('');
+      } else {
+        select.innerHTML = '<option value="">Lỗi tải danh sách sản phẩm</option>';
+      }
+    } catch (e) {
+      select.innerHTML = '<option value="">Lỗi tải danh sách sản phẩm</option>';
+    }
+
+    select.addEventListener('change', (e) => {
+      const productId = e.target.value;
+      const container = document.getElementById('product-stats-container');
+      if (!productId) {
+        if (container) container.style.display = 'none';
+        return;
+      }
+      loadProductStats(productId);
+    });
+  };
+
 
   // ================= TAB: PRODUCTS (CRUD) =================
   let categoriesCache = [];
@@ -608,8 +744,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
       }
 
-      const phoneRegex = /^(0|84|\+84)(3|5|7|8|9)[0-9]{8}$/;
-      if (!phoneRegex.test(phone)) {
+      const cleanPhone = phone.replace(/[\s\.\-\(\)]/g, '');
+      const phoneRegex = /^(0|84|\+84)((3|5|7|8|9)[0-9]{8}|2[0-9]{9})$/;
+      if (!phoneRegex.test(cleanPhone)) {
         showToast('Số điện thoại không đúng định dạng Việt Nam (ví dụ: 0988888888)!', 'warning');
         return;
       }
@@ -629,7 +766,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const formData = new FormData();
       formData.append('name', name);
       formData.append('email', email);
-      formData.append('phone', phone);
+      formData.append('phone', cleanPhone);
       formData.append('role', role);
       formData.append('status', status);
       formData.append('address', address);

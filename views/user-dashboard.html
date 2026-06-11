@@ -47,6 +47,7 @@
         <li class="dashboard-menu-item" data-tab="tab-addresses">🏠 Sổ địa chỉ giao nhận</li>
         <li class="dashboard-menu-item" data-tab="tab-wishlist">❤️ Danh sách yêu thích</li>
         <li class="dashboard-menu-item" data-tab="tab-teabreak">🍵 Yêu cầu Tea Break</li>
+        <li class="dashboard-menu-item" data-tab="tab-messages">💬 Tin nhắn hỗ trợ</li>
       </ul>
     </aside>
 
@@ -137,22 +138,22 @@
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label for="address-detail">Địa chỉ chi tiết (Số nhà, tên đường):</label>
-              <input type="text" id="address-detail" class="form-control" placeholder="123 Đường Lê Lợi" required>
+              <label for="address-city">Tỉnh / Thành phố:</label>
+              <select id="address-city" class="form-control" required></select>
             </div>
-            <div class="form-group">
-              <label for="address-ward">Phường / Xã:</label>
-              <select id="address-ward" class="form-control" required></select>
-            </div>
-          </div>
-          <div class="form-row">
             <div class="form-group">
               <label for="address-district">Quận / Huyện:</label>
               <select id="address-district" class="form-control" required></select>
             </div>
+          </div>
+          <div class="form-row">
             <div class="form-group">
-              <label for="address-city">Tỉnh / Thành phố:</label>
-              <select id="address-city" class="form-control" required></select>
+              <label for="address-ward">Phường / Xã:</label>
+              <select id="address-ward" class="form-control" required></select>
+            </div>
+            <div class="form-group">
+              <label for="address-detail">Địa chỉ chi tiết (Số nhà, tên đường):</label>
+              <input type="text" id="address-detail" class="form-control" placeholder="123 Đường Lê Lợi" required>
             </div>
           </div>
           <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
@@ -184,6 +185,20 @@
           <!-- Loaded dynamically -->
         </div>
       </section>
+      
+      <!-- Panel 6: Support Chat -->
+      <section class="dashboard-tab-panel" id="tab-messages">
+        <h3 class="tab-title">Trò chuyện hỗ trợ</h3>
+        <div class="card" style="display: flex; flex-direction: column; height: 500px; padding: 0; overflow: hidden; border: 1px solid var(--primary-light); border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
+          <div id="db-chat-messages">
+            <!-- Loaded dynamically -->
+          </div>
+          <div style="padding: 12px; border-top: 1px solid var(--gray-200); display: flex; gap: 8px; background: white; align-items: center;">
+            <input type="text" id="db-chat-input" class="form-control" placeholder="Nhập tin nhắn..." style="flex: 1; margin-bottom: 0;">
+            <button id="db-chat-send" class="btn btn-primary" style="padding: 10px 20px; font-weight: 600; white-space: nowrap;">Gửi</button>
+          </div>
+        </div>
+      </section>
 
     </div>
   </main>
@@ -210,22 +225,22 @@
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label for="edit-address-detail">Địa chỉ chi tiết (Số nhà, tên đường):</label>
-            <input type="text" id="edit-address-detail" class="form-control" required>
-          </div>
-          <div class="form-group">
             <label for="edit-address-city">Tỉnh / Thành phố:</label>
             <select id="edit-address-city" class="form-control" required></select>
           </div>
-        </div>
-        <div class="form-row">
           <div class="form-group">
             <label for="edit-address-district">Quận / Huyện:</label>
             <select id="edit-address-district" class="form-control" required></select>
           </div>
+        </div>
+        <div class="form-row">
           <div class="form-group">
             <label for="edit-address-ward">Phường / Xã:</label>
             <select id="edit-address-ward" class="form-control" required></select>
+          </div>
+          <div class="form-group">
+            <label for="edit-address-detail">Địa chỉ chi tiết (Số nhà, tên đường):</label>
+            <input type="text" id="edit-address-detail" class="form-control" required>
           </div>
         </div>
         <div class="form-group" style="display: flex; align-items: center; gap: 8px; margin-top: 16px;">

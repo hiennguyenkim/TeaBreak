@@ -12,8 +12,8 @@ const checkValidationResult = (req, res, next) => {
   next();
 };
 
-// Phone regex rule: starting with 0, total length 9 or 11 characters
-const phoneRegex = /^0\d{8}$|^0\d{10}$/;
+// Phone regex rule: Vietnamese phone format (starting with 0, 84, or +84 followed by standard mobile prefixes or landlines)
+const phoneRegex = /^(0|84|\+84)((3|5|7|8|9)[0-9]{8}|2[0-9]{9})$/;
 
 // Validation rules for Register
 exports.validateRegister = [
@@ -27,8 +27,9 @@ exports.validateRegister = [
     .withMessage('Địa chỉ Email không đúng định dạng (ví dụ: name@domain.com)'),
   body('phone')
     .trim()
+    .customSanitizer(val => val ? val.replace(/[\s\.\-\(\)]/g, '') : '')
     .matches(phoneRegex)
-    .withMessage('Số điện thoại bắt đầu bằng số 0, tổng độ dài 9 hoặc 11 ký tự (ví dụ: 0988888888)'),
+    .withMessage('Số điện thoại không đúng định dạng Việt Nam (ví dụ: 0988888888)'),
   body('password')
     .isLength({ min: 6 })
     .withMessage('Mật khẩu phải chứa ít nhất 6 ký tự'),
@@ -76,8 +77,9 @@ exports.validateProfileUpdate = [
   body('phone')
     .optional()
     .trim()
+    .customSanitizer(val => val ? val.replace(/[\s\.\-\(\)]/g, '') : '')
     .matches(phoneRegex)
-    .withMessage('Số điện thoại bắt đầu bằng số 0, tổng độ dài 9 hoặc 11 ký tự'),
+    .withMessage('Số điện thoại không đúng định dạng Việt Nam'),
   checkValidationResult
 ];
 
@@ -93,8 +95,9 @@ exports.validateAdminCreateUser = [
     .withMessage('Địa chỉ Email không đúng định dạng'),
   body('phone')
     .trim()
+    .customSanitizer(val => val ? val.replace(/[\s\.\-\(\)]/g, '') : '')
     .matches(phoneRegex)
-    .withMessage('Số điện thoại bắt đầu bằng số 0, tổng độ dài 9 hoặc 11 ký tự'),
+    .withMessage('Số điện thoại không đúng định dạng Việt Nam'),
   body('password')
     .isLength({ min: 6 })
     .withMessage('Mật khẩu khởi tạo phải chứa ít nhất 6 ký tự'),
@@ -116,8 +119,9 @@ exports.validateAdminUpdateUser = [
   body('phone')
     .optional()
     .trim()
+    .customSanitizer(val => val ? val.replace(/[\s\.\-\(\)]/g, '') : '')
     .matches(phoneRegex)
-    .withMessage('Số điện thoại bắt đầu bằng số 0, tổng độ dài 9 hoặc 11 ký tự'),
+    .withMessage('Số điện thoại không đúng định dạng Việt Nam'),
   body('password')
     .optional()
     .isLength({ min: 6 })
@@ -133,8 +137,9 @@ exports.validateAddress = [
     .withMessage('Vui lòng cung cấp tên người nhận'),
   body('phone')
     .trim()
+    .customSanitizer(val => val ? val.replace(/[\s\.\-\(\)]/g, '') : '')
     .matches(phoneRegex)
-    .withMessage('Số điện thoại bắt đầu bằng số 0, tổng độ dài 9 hoặc 11 ký tự'),
+    .withMessage('Số điện thoại không đúng định dạng Việt Nam'),
   body('addressDetail')
     .trim()
     .notEmpty()
@@ -162,8 +167,9 @@ exports.validateOrder = [
     .withMessage('Vui lòng cung cấp họ tên người nhận'),
   body('phone')
     .trim()
+    .customSanitizer(val => val ? val.replace(/[\s\.\-\(\)]/g, '') : '')
     .matches(phoneRegex)
-    .withMessage('Số điện thoại bắt đầu bằng số 0, tổng độ dài 9 hoặc 11 ký tự'),
+    .withMessage('Số điện thoại không đúng định dạng Việt Nam'),
   body('email')
     .trim()
     .isEmail()

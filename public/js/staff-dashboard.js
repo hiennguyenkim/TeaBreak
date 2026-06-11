@@ -829,6 +829,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       const fullname = document.getElementById('manual-customer-name').value.trim();
       const phone = document.getElementById('manual-customer-phone').value.trim();
       const email = document.getElementById('manual-customer-email').value.trim() || 'guest@gmail.com';
+      
+      const cleanPhone = phone.replace(/[\s\.\-\(\)]/g, '');
+      const phoneRegex = /^(0|84|\+84)((3|5|7|8|9)[0-9]{8}|2[0-9]{9})$/;
+      if (phone && !phoneRegex.test(cleanPhone)) {
+        showToast('Số điện thoại không đúng định dạng Việt Nam (ví dụ: 0988888888)', 'warning');
+        return;
+      }
+
       const address = document.getElementById('manual-customer-address').value.trim();
       const deliveryDate = document.getElementById('manual-customer-date').value;
       const deliveryTime = document.getElementById('manual-customer-time').value;
@@ -839,7 +847,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       const bodyData = {
         fullname,
-        phone,
+        phone: cleanPhone,
         email,
         address,
         items: manualOrderItems,

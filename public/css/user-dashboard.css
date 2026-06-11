@@ -234,3 +234,37 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Support Chat in Dashboard styling */
+#db-chat-messages {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background-color: #fafbfc;
+}
+
+#db-chat-messages .support-chat-msg {
+  max-width: 80%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+#db-chat-messages .support-chat-msg.sent {
+  align-self: flex-end;
+  background-color: var(--primary);
+  color: var(--light);
+  border-bottom-right-radius: 2px;
+}
+
+#db-chat-messages .support-chat-msg.received {
+  align-self: flex-start;
+  background-color: var(--gray-200);
+  color: var(--dark);
+  border-bottom-left-radius: 2px;
+}
